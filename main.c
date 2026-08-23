@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <math.h>
+#include <stdlib.h>
 
 #include "vec3.h"
 
@@ -30,30 +31,58 @@ void draw_line(vec3 ndc_pos1, vec3 ndc_pos2, vec3 line_col) {
     vec3 s_pos1 = ndc_to_screen(ndc_pos1);
     vec3 s_pos2 = ndc_to_screen(ndc_pos2);
 
-    int x = s_pos1.x;
-    int y = s_pos1.y;
-    int y_mut = y;
-    int dx = (int)s_pos2.x - x;
-    int dy = (int)s_pos2.y - y;
+    int xa = s_pos1.x;
+    int ya = s_pos1.y;
 
-    if (dx == 0) return;
+    int xb = s_pos2.x;
+    int yb = s_pos2.y;
 
-    int m = dy / dx;
-    float k = (float)dy / dx;
-    float b = y - (k * x);
+    int dx = abs(xb - xa);
+    int dy = abs(yb - ya);
 
-    // Choose lower x for start to goal
-    int s_x = x < (int)s_pos2.x ? x : (int)s_pos2.x;
-    int g_x = s_x == x ? (int)s_pos2.x : x;
+    int sx = xb >= xa ? 1 : -1; // sign of xb - xa;
+    int sy = yb >= ya ? 1 : -1; // sign of yb - ya;
 
+    if (dy <= dx) {
+	int d  = 2 * dy - dx;
+	int d1 = 2 * dy;
+	int d2 = 2 * (dy - dx);
+	int x = xa + sx;
+	int y = ya;
 
-    for (int x_it = s_x; x_it <= g_x; ++x_it) {
-	out_buffer[x_it][(int)round(y_mut)] = line_col;
-	y_mut += b;
+	out_buffer[xa][ya] = line_col;
+	for (int i = 1; i <= dx; ++i, x += sx) {
+	    if (d > 0) {
+		
+		d += d2;
+		y += sy;
+	    }
+	    else d += d1;
+
+	    out_buffer[x][y] = line_col;
+	}
     }
+    else {
 
-    out_buffer[x][y] = vec3_construct_sep(0.0, 0.0, 1.0);
-    out_buffer[x + dx][y + dy] = vec3_construct_sep(0.0, 0.0, 1.0);
+	int d  = 2 * dx - dy;
+	int d1 = 2 * dx;
+	int d2 = 2 * (dx - dy);
+	int x = xa;
+	int y = ya + sy;
+
+	out_buffer[x][y] = line_col;
+	for (int i = 1; i <= dy; ++i, y += sy) {
+	    if (d > 0) {
+		d += d2;
+		x += sx;
+	    }
+	    else d += d1;
+
+	    out_buffer[x][y] = line_col;
+	}
+
+    }
+    out_buffer[xa][ya] = vec3_construct_sep(0.0, 1.0, 0.0);
 }
 
 // Currently only ndc vertices + connect lines
