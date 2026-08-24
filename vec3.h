@@ -13,6 +13,9 @@ typedef struct vec3 {
 
 } vec3;
 
+typedef vec3 colour3;
+typedef vec3 point3;
+
 // Initialize vector with the same scalar value in all elements
 vec3 vec3_construct(double s);
 vec3 vec3_construct_sep(double x, double y, double z);
