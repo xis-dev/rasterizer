@@ -1,12 +1,13 @@
 #include <stdio.h>
+#include <limits.h>
 #include <math.h>
 #include <stdlib.h>
 #include <threads.h>
 
 #include "vec3.h"
 
-#define WIDTH 160
-#define HEIGHT 90
+#define WIDTH 1600
+#define HEIGHT 900
 
 // Row-array to hold column array
 vec3 out_buffer[WIDTH][HEIGHT];
@@ -111,17 +112,38 @@ void buildPlane(point3 p1, point3 p2, point3 p3,
 
 }
 
+bool posInTriangle(point3 t_ps[], point3 p) {
+
+    // Clockwise ordered vertices
+    vec3 edge0 = vec3_sub(t_ps[1], t_ps[0]);
+    vec3 p0    = vec3_sub(p, t_ps[1]);
+
+    vec3 edge1 = vec3_sub(t_ps[2], t_ps[1]);
+    vec3 p1    = vec3_sub(p, t_ps[2]);
+
+    vec3 edge2 = vec3_sub(t_ps[0], t_ps[2]);
+    vec3 p2    = vec3_sub(p, t_ps[0]);
+
+    float edge_f0 = edge0.x * p0.y - edge0.y * p0.x;
+    float edge_f1 = edge1.x * p1.y - edge1.y * p1.x;
+    float edge_f2 = edge2.x * p2.y - edge2.y * p2.x;
+
+    return edge_f0 > 0.0 && edge_f1 > 0.0 && edge_f2 > 0.0;
+}
+
 void rasterizeTriangle(point3 ps[]) {
 
-    int xMin = ps[0].x;
-    int yMin = ps[0].y;
-    int xMax = ps[0].x;
-    int yMax = ps[0].y;
+    int xMin = INT_MAX;
+    int yMin = INT_MAX;
+    int xMax = INT_MIN;
+    int yMax = INT_MIN;
 
     int a[3], b[3], c[3];
     // Find bounding box
-    for (int i = 1; i < 3; ++i) {
-	if (ps[i].x < xMin) xMin = ps[i].x;
+    for (int i = 0; i < 3; ++i) {
+	if (ps[i].x < xMin) {
+	    xMin = ps[i].x;
+	}
 	if (ps[i].y < yMin) yMin = ps[i].y;
 	if (ps[i].x > xMax) xMax = ps[i].x;
 	if (ps[i].y > yMax) yMax = ps[i].y;
@@ -130,9 +152,9 @@ void rasterizeTriangle(point3 ps[]) {
     }
 
     // Build line equations
-    buildPlane(ps[0], ps[1], ps[2], &a[0], &b[0], &c[2]);
-    buildPlane(ps[0], ps[2], ps[1], &a[1], &b[1], &c[1]);
-    buildPlane(ps[1], ps[2], ps[0], &a[2], &b[2], &c[2]);
+   // buildPlane(ps[0], ps[1], ps[2], &a[0], &b[0], &c[2]);
+    //buildPlane(ps[0], ps[2], ps[1], &a[1], &b[1], &c[1]);
+    //buildPlane(ps[1], ps[2], ps[0], &a[2], &b[2], &c[2]);
 
 
     // find functions at lower-left corner
@@ -151,8 +173,9 @@ void rasterizeTriangle(point3 ps[]) {
 	d2 += b[2];
 
 	for (int x = xMin; x <= xMax; ++x) {
-	    if (f0 >= 0 && f1 >= 0 && f2 >= 0) {
-		out_buffer[x][y] = vec3_construct_sep(1.0, 1.0, 1.0);
+
+		if (posInTriangle(ps, vec3_construct_sep(x, y, 0))) {
+		out_buffer[x][y] = vec3_construct_sep(0.5, 0.0, 1.0);
 
 		f0 += a[0];
 		f1 += a[1];
@@ -160,6 +183,7 @@ void rasterizeTriangle(point3 ps[]) {
 	    }
 	}
     }
+
 
 }
 // Currently only ndc vertices + connect lines
