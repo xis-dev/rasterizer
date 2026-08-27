@@ -48,15 +48,6 @@ vec3 vec3_add(vec3 v1, vec3 v2) {
     return out;
 }
 
-vec3 vec3_add_sep(vec3 v1, double v2_x, double v2_y, double v2_z) {
-    vec3 out;
-
-    out.x = v1.x + v2_x;
-    out.y = v1.y + v2_y;
-    out.z = v1.z + v2_z;
-
-    return out;
-}
 
 void vec3_add_mut(vec3* v1, vec3 v2) {
 
@@ -66,13 +57,6 @@ void vec3_add_mut(vec3* v1, vec3 v2) {
 
 }
 
-void vec3_add_sep_mut(vec3* v1, double v2_x, double v2_y, double v2_z) {
-
-    v1->x += v2_x;
-    v1->y += v2_y;
-    v1->z += v2_z;
-
-}
 
 vec3 vec3_sub(vec3 v1, vec3 v2) {
 
@@ -85,16 +69,6 @@ vec3 vec3_sub(vec3 v1, vec3 v2) {
     return out;
 }
 
-vec3 vec3_sub_sep(vec3 v1, double v2_x, double v2_y, double v2_z) {
-
-    vec3 out;
-
-    out.x = v1.x - v2_x;
-    out.y = v1.y - v2_y;
-    out.z = v1.z - v2_z;
-
-    return out;
-}
 
 void vec3_sub_mut(vec3* v1, vec3 v2) {
 
@@ -103,13 +77,6 @@ void vec3_sub_mut(vec3* v1, vec3 v2) {
     v1->z -= v2.z;
 }
 
-void vec3_sub_sep_mut(vec3* v1, double v2_x, double v2_y, double v2_z) {
-
-    v1->x -= v2_x;
-    v1->y -= v2_y;
-    v1->z -= v2_z;
-
-}
 
 vec3 vec3_scale(vec3 v1, float s) {
     vec3 out;
@@ -147,23 +114,6 @@ void vec3_mult_mut(vec3* v1, vec3 v2) {
 
 }
 
-vec3 vec3_mult_sep(vec3 v1, double v2_x, double v2_y, double v2_z) {
-
-    vec3 out;
-
-    out.x = v1.x * v2_x;
-    out.y = v1.y * v2_y;
-    out.z = v1.z * v2_z;
-
-    return out;
-}
-
-void vec3_mult_sep_mut(vec3* v, double v2_x, double v2_y, double v2_z) {
-    
-    v->x *= v2_x;
-    v->y *= v2_y;
-    v->z *= v2_z;
-}
 
 vec3 vec3_div(vec3 v1, vec3 v2) {
     // TODO: Low prio(?) error passing to handle 0 in vec3 element, or dont
@@ -185,24 +135,7 @@ void vec3_div_mut(vec3* v1, vec3 v2) {
     v1->z = v2.z == 0.0 ? 0.0 : v1->z / v2.z;
 }
 
-vec3 vec3_div_sep(vec3 v1, double v2_x, double v2_y, double v2_z) {
 
-    vec3 out;
-
-    // todo: add equation function for doubles to general math lib
-    out.x = v2_x == 0.0 ? 0.0 : v1.x / v2_x;
-    out.y = v2_y == 0.0 ? 0.0 : v1.y / v2_y;
-    out.z = v2_z == 0.0 ? 0.0 : v1.z / v2_z;
-
-    return out;
-}
-
-void vec3_div_sep_mult(vec3* v, double v2_x, double v2_y, double v2_z) {
-
-    v->x = v2_x == 0.0 ? 0.0 : v->x / v2_x;
-    v->y = v2_y == 0.0 ? 0.0 : v->y / v2_y;
-    v->z = v2_z == 0.0 ? 0.0 : v->z / v2_z;
-}
 
 float vec3_dot(vec3 v1, vec3 v2) {
     return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z);
@@ -210,9 +143,6 @@ float vec3_dot(vec3 v1, vec3 v2) {
 }
 
 
-float vec3_dot_sep(vec3 v1, double v2_x, double v2_y, double v2_z) {
-    return (v1.x * v2_x) + (v1.y * v2_y) + (v1.z * v2_z);
-}
 
 vec3 vec3_cross(vec3 v1, vec3 v2) {
 
@@ -225,18 +155,8 @@ vec3 vec3_cross(vec3 v1, vec3 v2) {
     return out;
 }
 
-vec3 vec3_cross_sep(vec3 v1, double v2_x, double v2_y, double v2_z) {
 
-    vec3 out;
-
-    out.x = (v1.y * v2_z) - (v1.z * v2_y);
-    out.y = (v1.z * v2_x) - (v1.x * v2_z);
-    out.z = (v1.x * v2_y) - (v1.y * v2_x);
-
-    return out;
-}
-
-void normalize_mut(vec3* v) {
+void vec3_normalize_mut(vec3* v) {
     
     // TODO: Need proper double equals for this too
     
