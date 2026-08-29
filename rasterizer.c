@@ -1,6 +1,6 @@
 #include "rasterizer.h"
-#include "vec2.h"
-#include "vec3.h"
+
+#include "rasmath.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -76,7 +76,7 @@ void rasterizer_draw_line(rasterizer* r, vertex vt1, vertex vt2) {
     
     colour3 c;
 
-    // Take axis with more samples
+    // Take larger axis
     if (dy > dx) {
 	int d  = 2 * dx - dy;
 	int d1 = 2 * dx;
@@ -140,8 +140,6 @@ void rasterizer_make_lines_loop(rasterizer* r, size_t vc, vertex vs[]) {
     }
 
     // Draw line from last to first then continue
-
-    // TODO: Might be better to take in vec3's into draw functions to avoid unecessary casting everytime
     rasterizer_draw_line(r, vs[vc - 1], vs[0]);
 
     for (int i = 0; i < vc - 1; ++i) {
@@ -151,16 +149,120 @@ void rasterizer_make_lines_loop(rasterizer* r, size_t vc, vertex vs[]) {
     }
 }
 
+// Edge function for 3 counter clockwise described vertices, set to return a positive value
+float edgeFunction(vec2 v1, vec2 v2, vec2 v3) {
+    return (v3.x - v2.x) * (v2.y - v1.y) - (v3.y - v2.y) * (v2.x - v1.x);
+}
+
+// Fast compute barycentric when all areas are known
+vec3 compute_barycentric_fast(float a1, float a2, float total_area) {
+
+    vec3 out;
+
+    out.x = a1 / total_area;
+    out.y = a2 / total_area;
+    out.z = 1.0 - out.x - out.y;
+
+    return out;
+}
+
+// Compute barycentric of a point from triangle vertices
+// TODO: Will need to change or make new ver for barycentric from randomly positioned triangles in 3d space, dropping the axis closest to the normal and such
+vec3 compute_barycentric_screen(vec2 p, vec2 v1, vec2 v2, vec2 v3) {
+
+    float p_area = edgeFunction(v1, v2, v3);
+
+    float e0 = edgeFunction(v1, v2, p);
+    float e1 = edgeFunction(v2, v3, p);
+
+    return compute_barycentric_fast(e0, e1, p_area);
+}
+
+void rasterizer_draw_triangle(rasterizer* r, vertex vtx1, vertex vtx2, vertex vtx3) {
+
+    vec2 ps[3];
+
+    ps[0] = vec3_convert_vec2(ndc_to_screen(vtx1.pos, r->w, r->h));
+    ps[1] = vec3_convert_vec2(ndc_to_screen(vtx2.pos, r->w, r->h));
+    ps[2] = vec3_convert_vec2(ndc_to_screen(vtx3.pos, r->w, r->h));
+
+    int xMin = ps[0].x;
+    int yMin = ps[0].y;
+    int xMax = ps[0].x;
+    int yMax = ps[0].y;
+
+
+    // Find bounding box
+    for (int i = 1; i < 3; ++i) {
+	if (ps[i].x < xMin) xMin = ps[i].x;
+	if (ps[i].y < yMin) yMin = ps[i].y;
+	if (ps[i].x > xMax) xMax = ps[i].x;
+	if (ps[i].y > yMax) yMax = ps[i].y;
+    }
+
+    float p_area = edgeFunction(ps[0], ps[1], ps[2]);
+
+    for (int y = yMin; y <= yMax; ++y) {
+
+	for (int x = xMin; x <= xMax; ++x) {
+
+	    vec2 p = (vec2){x, y};
+
+	    float e0 = edgeFunction(ps[0], ps[1], p);
+	    float e1 = edgeFunction(ps[1], ps[2], p);
+	    float e2 = edgeFunction(ps[2], ps[0], p);
+
+	    // Compute barycentric using ratio between parallelograms formed by main and inner triangles 
+	    vec3 b = compute_barycentric_fast(e1, e2, p_area);
+
+	    // if all edge functions fall within the positive plane, the point must be in the triangle
+	    if (e0 >= 0 && e1 >= 0 && e2 >= 0) {
+		colour3 c = vec3_add(vec3_add(vec3_scale(vtx1.col, b.x), vec3_scale(vtx2.col, b.y)), vec3_scale(vtx3.col, b.z));
+
+		rasterizer_draw_pixel(r, x, y, c);
+	    } 
+	    
+	}
+    }
+}
+
+void rasterizer_make_triangles(rasterizer *r, size_t vc, vertex vs[]) {
+
+    size_t verts_remaining = vc;
+    size_t i = 0;
+
+    while (verts_remaining >= 3) {
+
+	// Draw triangle with 3 points
+	rasterizer_draw_triangle(r, vs[i], vs[i + 1], vs[i + 2]);
+	i += 3;
+	verts_remaining -= 3;
+    }
+
+    // Not given enough vertices to create only triangles
+    if (verts_remaining == 1) {
+
+	// Draw singular pixel with last point
+	vertex last_v = vs[vc - 1];
+	rasterizer_draw_pixel(r, last_v.pos.x, last_v.pos.y, last_v.col);
+
+    }
+    else if (verts_remaining == 2) {
+	// Draw line with last two points
+	rasterizer_draw_line(r, vs[vc - 2], vs[vc - 1]);
+    }
+}
+
 void rasterizer_draw(rasterizer* r, rasterizer_draw_mode mode, size_t vc, vertex vs[]) {
 
     switch(mode) {
 
 	case DRAW_LINES:
-	    break;
 	case DRAW_LINES_LOOP:
 	    rasterizer_make_lines_loop(r, vc, vs);
 	    break;
 	case DRAW_TRIANGLES:
+	    rasterizer_make_triangles(r, vc, vs);
 	    break;
     }
 
@@ -174,7 +276,7 @@ void rasterizer_output_ppm(rasterizer* r) {
     img = fopen(r->out_img, "w");
 
     if (!img) {
-	printf("Rasterizer failed to open output file '%s' for writing", r->out_img);
+	printf("Rasterizer failed to open ppm output file '%s' for writing", r->out_img);
 
 	return;
     }

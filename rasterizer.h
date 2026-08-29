@@ -41,9 +41,9 @@ void rasterizer_draw_line(rasterizer* r, vertex vt1, vertex vt2);
 
 void rasterizer_make_lines_loop(rasterizer* r, size_t vc, vertex vs[]);
 
-void rasterizer_draw_triangle(rasterizer* r, point3 p1, point3 p2, point3 p3);
+void rasterizer_draw_triangle(rasterizer* r, vertex v1, vertex v2, vertex v3);
 
-void rasterizer_make_triangles(rasterizer* r, int vc, vertex vs[]);
+void rasterizer_make_triangles(rasterizer* r, size_t vc, vertex vs[]);
 
 void rasterizer_draw(rasterizer* r, rasterizer_draw_mode mode, size_t vc, vertex vs[]);
 
