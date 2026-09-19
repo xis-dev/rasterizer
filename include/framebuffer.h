@@ -7,4 +7,8 @@ typedef struct {
     colour4* colour_buffer;
     float* depth_buffer;
 } framebuffer;
+
+void framebuffer_construct(framebuffer* f, int w, int h);
+
+
 #endif

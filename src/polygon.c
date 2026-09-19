@@ -32,6 +32,7 @@ polygon polygon_triangulate(polygon p) {
     if (p.count < 3) return p;
 
     polygon out;
+    polygon_construct(&out);
     const vertex v1 = p.data[0];
 
     for (int v = 2; v < p.count; ++v) {

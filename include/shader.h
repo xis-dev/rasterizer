@@ -1,15 +1,17 @@
 #ifndef SHADER_H
 #define SHADER_H
 
-#include "context.h"
 #include "vertex.h"
 #include "vec4.h"
+
+typedef struct context context;
 
 typedef struct {
 
     vertex (* vertex_shader)  (const context*, vertex);
-    colour4(* fragment_shader)(const context*);
+    colour4(* fragment_shader)(const context*, vertex*);
 } shader_program;
 
 vertex default_vert_shader(const context* ctx, vertex v);
+colour4 default_frag_shader(const context* ctx, vertex* v);
 #endif

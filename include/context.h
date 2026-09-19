@@ -5,6 +5,7 @@
 #include "shader_value.h"
 #include "shader.h"
 #include "framebuffer.h"
+#include "vec4.h"
 
 #include <stdint.h>
 #include <stdio.h>
@@ -43,5 +44,11 @@ typedef struct context {
     int vp_height;
 
 } context;
+
+void context_clear_colour(const context* c, colour4 colour);
+
+void context_clear_depth(const context* c);
+
+void context_write_output(const context* c, int x, int y, colour4 colour);
 
 #endif

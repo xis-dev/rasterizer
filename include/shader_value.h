@@ -39,9 +39,6 @@ typedef struct {
     memcpy((out_ptr), (sv).value, sizeof(*(out_ptr))); \
 } while (0)
 
-void sv_test(shader_value* sv){
 
-
-}
 
 #endif

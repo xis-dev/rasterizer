@@ -182,9 +182,6 @@ void rasterizer_draw_triangle(rasterizer* r, vertex vtx1, vertex vtx2, vertex vt
 
     vec2 ps[3];
 
-    ps[0] = vec3_convert_vec2(ndc_to_screen(vtx1.pos, r->w, r->h));
-    ps[1] = vec3_convert_vec2(ndc_to_screen(vtx2.pos, r->w, r->h));
-    ps[2] = vec3_convert_vec2(ndc_to_screen(vtx3.pos, r->w, r->h));
 
     int xMin = ps[0].x;
     int yMin = ps[0].y;

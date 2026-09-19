@@ -316,9 +316,9 @@ mat4 mat4_lookat(vec3 eye, vec3 target) {
 
 	vec3 cam_right = vec3_cross(cam_up, cam_forward);
 
-	out.c0 = (vec4){cam_right.x, cam_forward.x, cam_up.x, 0.0f};
-	out.c1 = (vec4){cam_right.y, cam_forward.y, cam_up.y, 0.0f};
-	out.c2 = (vec4){cam_right.z, cam_forward.z, cam_up.z, 0.0f};
+	out.c0 = (vec4){cam_right.x, cam_up.x, cam_forward.x, 0.0f};
+	out.c1 = (vec4){cam_right.y, cam_up.y, cam_forward.y, 0.0f};
+	out.c2 = (vec4){cam_right.z, cam_up.z, cam_forward.z, 0.0f};
 	out.c3 = (vec4){-vec3_dot(cam_right, eye), -vec3_dot(cam_up,eye), -vec3_dot(cam_forward, eye), 1.0f};
 
 	return out;

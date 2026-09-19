@@ -1,5 +1,8 @@
 #include "shader.h"
 
+#include "context.h"
+#include "shader_value.h"
+
 vertex default_vert_shader(const context *ctx, vertex v) {
 
     mat4 mvp_matrix;
