@@ -1,7 +1,7 @@
 #ifndef RASTERIZER_H
 #define RASTERIZER_H
 
-#include "rasmath.h"
+#include "math/rasmath.h"
 
 #include <stdlib.h>
 #include <math.h>

@@ -1,7 +1,9 @@
 #include "vec3.h"
 #include <math.h>
 
-vec3 vec3_construct(double s) {
+#include "common_math.h"
+
+vec3 vec3_construct(float s) {
 
     vec3 out;
 
@@ -9,7 +11,7 @@ vec3 vec3_construct(double s) {
 
     return out;
 }
-vec3 vec3_construct_sep(double x, double y, double z) {
+vec3 vec3_construct_sep(float x, float y, float z) {
 
     vec3 out;
 
@@ -20,16 +22,16 @@ vec3 vec3_construct_sep(double x, double y, double z) {
     return out;
 }
 
-void vec3_construct_mut(vec3* v, double s) { v->x = v->y = v->z = s;}
+void vec3_construct_mut(vec3* v, float s) { v->x = v->y = v->z = s;}
 
-void vec3_construct_sep_mut(vec3* v, double x, double y, double z) {
+void vec3_construct_sep_mut(vec3* v, float x, float y, float z) {
 
     v->x = x;
     v->y = y;
     v->z = z;
 }
 
-double vec3_magnitude(vec3 v1){ return sqrt((v1.x * v1.x) + (v1.y * v1.y) + (v1.z * v1.z)); }
+float vec3_magnitude(vec3 v1){ return sqrt((v1.x * v1.x) + (v1.y * v1.y) + (v1.z * v1.z)); }
 
 vec3 vec3_zero() {
     vec3 out;
@@ -95,7 +97,7 @@ void vec3_scale_mut(vec3* v1, float s) {
     v1->z *= s;
 }
 
-vec3 vec3_mult(vec3 v1, vec3 v2) {
+vec3 vec3_multiply(vec3 v1, vec3 v2) {
     vec3 out;
 
     out.x = v1.x * v2.x;
@@ -106,7 +108,7 @@ vec3 vec3_mult(vec3 v1, vec3 v2) {
 
 }
 
-void vec3_mult_mut(vec3* v1, vec3 v2) {
+void vec3_multiply_mut(vec3* v1, vec3 v2) {
 
     v1->x *= v2.x;
     v1->y *= v2.y;
@@ -120,7 +122,7 @@ vec3 vec3_div(vec3 v1, vec3 v2) {
     
     vec3 out;
 
-    // todo: add equation function for doubles to general math lib
+    // todo: add equation function for floats to general math lib
     out.x = v2.x == 0.0 ? 0.0 : v1.x / v2.x;
     out.y = v2.y == 0.0 ? 0.0 : v1.y / v2.y;
     out.z = v2.z == 0.0 ? 0.0 : v1.z / v2.z;
@@ -158,9 +160,9 @@ vec3 vec3_cross(vec3 v1, vec3 v2) {
 
 void vec3_normalize_mut(vec3* v) {
     
-    // TODO: Need proper double equals for this too
+    // TODO: Need proper float equals for this too
     
-    double length = vec3_magnitude(*v);
+    float length = vec3_magnitude(*v);
 
     // v is already zero vector if its length is 0, but safety insurance set to 0
     if (length == 0.0) {
@@ -174,11 +176,11 @@ void vec3_normalize_mut(vec3* v) {
 }
 
 vec3 vec3_get_normalized(vec3 v) {
-    // TODO: Need proper double equals for this too
+    // TODO: Need proper float equals for this too
    
     vec3 out;
 
-    double length = vec3_magnitude(v);
+    float length = vec3_magnitude(v);
 
     // v is already zero vector if its length is 0, but safety insurance set to 0
     if (length == 0.0) {
@@ -194,16 +196,26 @@ vec3 vec3_get_normalized(vec3 v) {
     return out;
 }
 
-double vec3_dist(vec3 v1, vec3 v2) {
+float vec3_dist(vec3 v1, vec3 v2) {
     vec3 d = vec3_sub(v2, v1);
 
     return vec3_magnitude(d);
 }
 
-double vec3_dist_sq(vec3 v1, vec3 v2) {
+float vec3_dist_sq(vec3 v1, vec3 v2) {
     vec3 d = vec3_sub(v2, v1);
 
     return (d.x * d.x) + (d.y * d.y) + (d.z * d.z);
+}
+
+vec3 vec3_lerp(vec3 v1, vec3 v2, float t) {
+
+    vec3 out;
+    out.x = lerp_f(v1.x, v2.x, t);
+    out.y = lerp_f(v1.y, v2.y, t);
+    out.z = lerp_f(v1.z, v2.z, t);
+
+    return out;
 }
 
 bool vec3_equals(vec3 v1, vec3 v2) {

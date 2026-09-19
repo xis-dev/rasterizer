@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #include <threads.h>
 
-#include "rasterizer.h"
-#include "vec3.h"
+#include "../include/rasterizer.h"
+#include "../include/math/vec3.h"
 
 #define WIDTH 160
 #define HEIGHT 90
