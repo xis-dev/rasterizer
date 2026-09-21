@@ -5,9 +5,9 @@
 
 void process_source_triangle(const context *ctx, vertex v1, vertex v2, vertex v3) {
 
-    v1 = ctx->shader->vertex_shader(ctx, v1);
-    v2 = ctx->shader->vertex_shader(ctx, v2);
-    v3 = ctx->shader->vertex_shader(ctx, v3);
+    v1 = ctx->shader.vertex_shader(ctx, v1);
+    v2 = ctx->shader.vertex_shader(ctx, v2);
+    v3 = ctx->shader.vertex_shader(ctx, v3);
 
     // TODO: Add culling, pre clip
     polygon clipped = clip_triangle(v1, v2, v3);
@@ -107,7 +107,10 @@ static bool depth_test(const context* c, int pos_x, int pos_y, float depth) {
 
     float current_depth = c->out_buffer->depth_buffer[pos_y * c->vp_width + pos_x];
 
-    if (current_depth <= depth) return true;
+    if (depth <= current_depth) {
+        context_write_depth(c, pos_x, pos_y, depth);
+        return true;
+    };
 
     return false;
 }
@@ -161,7 +164,7 @@ void rasterize_triangle(const context* ctx, vertex v1, vertex v2, vertex v3) {
                 fragment_vert.pos.x = (float)x;
                 fragment_vert.pos.y = (float)y;
 
-                colour4 frag_colour = ctx->shader->fragment_shader(ctx, &fragment_vert);
+                colour4 frag_colour = ctx->shader.fragment_shader(ctx, &fragment_vert);
 
                 if (depth_test(ctx, x, y, fragment_vert.pos.z)) {
                     context_write_output(ctx, x, y, frag_colour);
@@ -233,12 +236,14 @@ polygon clip_triangle(vertex v1, vertex v2, vertex v3) {
                 const float t = da / (da - db);
                 polygon_add_vertex(&out,get_interpolated_vertex(*a, *b, t));
 
+                printf("Add only intersection point, first inside, second out\n");
             }
             else if (da < 0.0f && db >= 0.0f) { // First vertex outside, second inside, add point of intersection and second vertex
 
                 const float t = da / (da - db);
                 polygon_add_vertex(&out,get_interpolated_vertex(*a, *b, t));
 
+                printf("Add both intersection point and second, first inside, second out\n");
                 polygon_add_vertex(&out, *b);
             }
             else { // Both vertices are outside, do nothing

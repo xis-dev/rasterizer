@@ -3,6 +3,8 @@
 #include <stdarg.h>
 #include <stdio.h>
 
+#include "common_math.h"
+
 mat4 mat4_construct_fill(float s) {
     mat4 out;
     out.c0 = out.c1 = out.c2 = out.c3 = vec4_construct(s);
@@ -222,21 +224,23 @@ void mat4_transpose(mat4* m) {
     m->c3 = (vec4){temp.c0.w, temp.c1.w, temp.c2.w, temp.c3.w};
 }
 
-mat4 mat4_rotate_by_axis(mat4 m, double angle, vec3 axis) {
+mat4 mat4_rotate_by_axis(mat4 m, double angle_deg, vec3 axis) {
 
     mat4 out;
 
-    out.c0 = (vec4){(axis.x * axis.x) * (1 - cos(angle)) + cos(angle),
-		    (axis.x * axis.y) * (1 - cos(angle)) + axis.z * sin(angle),
-		    (axis.x * axis.z) * (1 - cos(angle)) - axis.y * sin(angle), 0.0};
+	double angle_rad = (angle_deg * CM_PI) / 180.0f;
 
-    out.c1 = (vec4){(axis.x * axis.y) * (1 - cos(angle)) - axis.z * sin(angle),
-		    (axis.y * axis.y) * (1 - cos(angle)) + cos(angle),
-		    (axis.y * axis.z) * (1 - cos(angle)) + axis.x * sin(angle), 0.0};
+    out.c0 = (vec4){(axis.x * axis.x) * (1 - cos(angle_rad)) + cos(angle_rad),
+		    (axis.x * axis.y) * (1 - cos(angle_rad)) + axis.z * sin(angle_rad),
+		    (axis.x * axis.z) * (1 - cos(angle_rad)) - axis.y * sin(angle_rad), 0.0};
 
-    out.c2 = (vec4){(axis.x * axis.z) * (1 - cos(angle)) + axis.y * sin(angle),
-		    (axis.y * axis.z) * (1 - cos(angle)) - axis.x * sin(angle),
-		    (axis.z * axis.z) * (1 - cos(angle)) + cos(angle), 0.0};
+    out.c1 = (vec4){(axis.x * axis.y) * (1 - cos(angle_rad)) - axis.z * sin(angle_rad),
+		    (axis.y * axis.y) * (1 - cos(angle_rad)) + cos(angle_rad),
+		    (axis.y * axis.z) * (1 - cos(angle_rad)) + axis.x * sin(angle_rad), 0.0};
+
+    out.c2 = (vec4){(axis.x * axis.z) * (1 - cos(angle_rad)) + axis.y * sin(angle_rad),
+		    (axis.y * axis.z) * (1 - cos(angle_rad)) - axis.x * sin(angle_rad),
+		    (axis.z * axis.z) * (1 - cos(angle_rad)) + cos(angle_rad), 0.0};
 
     out.c3 = (vec4){0.0, 0.0, 0.0, 1.0};
 
@@ -302,7 +306,7 @@ mat4 mat4_lookat(vec3 eye, vec3 target) {
 
 	mat4 out;
 
-	vec3 cam_forward = vec3_sub(eye, target);
+	vec3 cam_forward = vec3_get_normalized(vec3_sub(target, eye));
 
 	vec3 g_up = {.x = 0.0f, .y = 1.0f, .z = 0.0f};
 
@@ -312,7 +316,7 @@ mat4 mat4_lookat(vec3 eye, vec3 target) {
 	}
 
 	// Take only portion of g_up perpendicular to cam_forward
-	vec3 cam_up = vec3_sub(g_up, vec3_scale(cam_forward, vec3_dot(g_up, cam_forward)));
+	vec3 cam_up = vec3_get_normalized(vec3_sub(g_up, vec3_scale(cam_forward, vec3_dot(g_up, cam_forward))));
 
 	vec3 cam_right = vec3_cross(cam_up, cam_forward);
 
@@ -327,7 +331,7 @@ mat4 mat4_lookat(vec3 eye, vec3 target) {
 // Projection matrix mapping -w <= x,y <= w and 0 <= z <= w
 mat4 mat4_projection(float near, float far, float fovy, float aspect) {
 
-	float zoom_y = 1.0f / tanf(fovy / 2.0f);
+	float zoom_y = 1.0f / tanf(((fovy / 2.0f) * (float)CM_PI ) / 180.0f);
 	float zoom_x = zoom_y / aspect;
 
 	float z_term = far / (far - near);

@@ -18,7 +18,6 @@ set(INCLUDE_DIRS
 
 set(PROJECT_SOURCES
         src/main.c
-        src/rasterizer.c
         src/context.c
         src/shader_value.c
         src/renderer.c

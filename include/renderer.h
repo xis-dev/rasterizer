@@ -16,4 +16,6 @@ void rasterize_triangle(const context* ctx, vertex v1, vertex v2, vertex v3);
 void draw_listed_triangles(const context* ctx, size_t vert_count);
 
 void draw_indexed_triangles(const context* ctx, size_t index_count);
+
+
 #endif

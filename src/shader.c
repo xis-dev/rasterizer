@@ -12,3 +12,8 @@ vertex default_vert_shader(const context *ctx, vertex v) {
 
     return v;
 }
+
+colour4 default_frag_shader(const context* ctx, vertex* v) {
+    colour4 out = (colour4){v->pos.x / vec4_magnitude(v->pos), v->pos.y / vec4_magnitude(v->pos), v->pos.z / vec4_magnitude(v->pos), 1.0f};
+    return out;
+}

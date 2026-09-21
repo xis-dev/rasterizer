@@ -6,10 +6,6 @@
 #include <stdlib.h>
 #include <math.h>
 
-typedef struct vertex {
-    vec3 pos;
-    colour3 col;
-} vertex;
 
 
 vec3 ndc_to_screen(vec3 ndc, int screen_w, int screen_h);

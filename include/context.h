@@ -35,8 +35,9 @@ typedef struct context {
     uint32_t* index_buffer;
 
     shader_value* uniform_buffer;
+    size_t uniform_count;
 
-    shader_program* shader;
+    shader_program shader;
 
     framebuffer* out_buffer;
 
@@ -45,10 +46,23 @@ typedef struct context {
 
 } context;
 
+void context_default_initialize(context* c);
+
+void context_set_viewport_size(context* c, int w, int h);
+
+void context_set_uniform_array(context* c, shader_value* uniforms, size_t count);
+
 void context_clear_colour(const context* c, colour4 colour);
 
 void context_clear_depth(const context* c);
 
+void context_write_depth(const context* c, int x, int y, float depth);
+
 void context_write_output(const context* c, int x, int y, colour4 colour);
+
+void context_output_image_ppm(context* c, const char* file_name);
+
+// Cleanup context object, frees shader values stored in uniform buffer
+void context_cleanup(context* c);
 
 #endif

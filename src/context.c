@@ -1,5 +1,30 @@
 #include "context.h"
 
+void context_default_initialize(context *c) {
+
+    c->vp_width = c->vp_height = 0;
+
+    c->uniform_buffer = NULL;
+    c->vertex_buffer = NULL;
+    c->index_buffer = NULL;
+
+    c->uniform_count = 0;
+}
+
+void context_set_viewport_size(context* c, int w, int h) {
+
+    c->vp_width = w;
+    c->vp_height = h;
+}
+
+void context_set_uniform_array(context *c, shader_value* uniforms, size_t count) {
+
+    c->uniform_count = count;
+    c->uniform_buffer = uniforms;
+
+
+}
+
 void context_clear_colour(const context *c, colour4 colour) {
 
     size_t buff_size = c->vp_width * c->vp_height;
@@ -20,7 +45,55 @@ void context_clear_depth(const context *c) {
 
 }
 
+void context_write_depth(const context *c, int x, int y, float depth) {
+    c->out_buffer->depth_buffer[(c->vp_width * y) + x] = depth;
+}
+
 void context_write_output(const context *c, int x, int y, colour4 colour) {
 
     c->out_buffer->colour_buffer[(c->vp_width * y) + x] = colour;
+}
+
+void context_output_image_ppm(context *c, const char *file_name) {
+
+    FILE* img = fopen(file_name, "w");
+
+    if (!img) {
+        printf("Context failed to open file: %s for ppm image output", file_name);
+        return;
+    }
+
+    fprintf(img, "P3 \n%i %i \n255\n", c->vp_width, c->vp_height);
+
+    for (int y = (c->vp_height - 1); y >= 0; --y) {
+        for (int x = 0; x < c->vp_width; ++x) {
+
+            float r_f = c->out_buffer->colour_buffer[(c->vp_width * y) + x].x;
+            float g_f = c->out_buffer->colour_buffer[(c->vp_width * y) + x].y;
+            float b_f = c->out_buffer->colour_buffer[(c->vp_width * y) + x].z;
+
+            r_f = r_f > 1.0f ? 1.0f : r_f < 0.0f ? 0.0f : r_f;
+            g_f = g_f > 1.0f ? 1.0f : g_f < 0.0f ? 0.0f : g_f;
+            b_f = b_f > 1.0f ? 1.0f : b_f < 0.0f ? 0.0f : b_f;
+
+            int r = (int)(r_f * 255.99f);
+            int g = (int)(g_f * 255.99f);
+            int b = (int)(b_f * 255.99f);
+
+            fprintf(img, "%i %i %i\n", r, g, b);
+        }
+    }
+
+    fclose(img);
+}
+
+void context_cleanup(context *c) {
+
+    c->vertex_buffer  = NULL;
+    c->index_buffer   = NULL;
+
+    c->uniform_count = 0;
+    c->uniform_buffer = NULL;
+
+    c->out_buffer = NULL;
 }
