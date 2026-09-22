@@ -24,10 +24,12 @@ set(PROJECT_SOURCES
         src/polygon.c
         src/shader.c
         src/framebuffer.c
+        src/light.c
 
         src/math/vec2.c
         src/math/vec3.c
         src/math/vec4.c
+        src/math/mat3.c
         src/math/mat4.c
         src/math/rasmath.c
         src/math/common_math.c

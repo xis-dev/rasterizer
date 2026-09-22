@@ -244,6 +244,8 @@ mat4 mat4_rotate_by_axis(mat4 m, double angle_deg, vec3 axis) {
 
     out.c3 = (vec4){0.0, 0.0, 0.0, 1.0};
 
+	out = mat4_mult(out, m);
+
     return out;
 }
 mat4 mat4_scale_by_axis(mat4 m, double s, vec3 axis) {
@@ -263,6 +265,8 @@ mat4 mat4_scale_by_axis(mat4 m, double s, vec3 axis) {
 		    1 + (s - 1) * (axis.z * axis.z), 0.0};
 
     out.c3 = (vec4){0.0, 0.0, 0.0, 1.0};
+
+	out = mat4_mult(out, m);
 
     return out;
 }
@@ -345,5 +349,7 @@ mat4 mat4_projection(float near, float far, float fovy, float aspect) {
 
 	return out;
 }
+
+
 
 void mat4_print(mat4 m);

@@ -6,6 +6,7 @@
 #include "shader.h"
 #include "framebuffer.h"
 #include "vec4.h"
+#include "light.h"
 
 #include <stdint.h>
 #include <stdio.h>
@@ -29,6 +30,9 @@ typedef enum {
     UNIFORM_SLOT_16,
 } uniform_slots;
 
+#define MAX_DIRECTIONAL_LIGHTS 1
+#define MAX_POINT_LIGHTS 8
+
 typedef struct context {
 
     vertex* vertex_buffer;
@@ -36,6 +40,10 @@ typedef struct context {
 
     shader_value* uniform_buffer;
     size_t uniform_count;
+
+    directional_light dir_lights[MAX_DIRECTIONAL_LIGHTS];
+    point_light point_lights[MAX_POINT_LIGHTS];
+
 
     shader_program shader;
 
