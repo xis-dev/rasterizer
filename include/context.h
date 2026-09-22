@@ -7,10 +7,13 @@
 #include "framebuffer.h"
 #include "vec4.h"
 #include "light.h"
+#include "material.h"
+#include "texture.h"
 
 #include <stdint.h>
 #include <stdio.h>
 
+#define MAX_UNIFORMS 16
 typedef enum {
     UNIFORM_SLOT_1,
     UNIFORM_SLOT_2,
@@ -33,20 +36,25 @@ typedef enum {
 #define MAX_DIRECTIONAL_LIGHTS 1
 #define MAX_POINT_LIGHTS 8
 
+#define MAX_TEXTURES 2
+typedef enum {
+    TEXTURE_SLOT_1,
+    TEXTURE_SLOT_2
+} texture_slots;
 typedef struct context {
 
     vertex* vertex_buffer;
     uint32_t* index_buffer;
 
-    shader_value* uniform_buffer;
-    size_t uniform_count;
+    shader_value uniform_buffer[MAX_UNIFORMS];
 
     directional_light dir_lights[MAX_DIRECTIONAL_LIGHTS];
     point_light point_lights[MAX_POINT_LIGHTS];
 
-
     shader_program shader;
+    material material;
 
+    texture_rgba* textures[MAX_TEXTURES];
     framebuffer* out_buffer;
 
     int vp_width;

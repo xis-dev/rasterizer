@@ -7,6 +7,14 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS  ON)
 
+set(LOCAL_DEPENDENCIES
+        ${PROJECT_SOURCE_DIR}/local_dependencies
+)
+
+set(STB_DIR
+        ${LOCAL_DEPENDENCIES}/stb
+)
+
 set(INCLUDE_DIRS
         ${PROJECT_SOURCE_DIR}
         ${PROJECT_SOURCE_DIR}/src
@@ -14,6 +22,8 @@ set(INCLUDE_DIRS
         ${PROJECT_SOURCE_DIR}/include
         ${PROJECT_SOURCE_DIR}/include/math
 
+        ${LOCAL_DEPENDENCIES}
+        ${STB_DIR}
 )
 
 set(PROJECT_SOURCES
@@ -33,6 +43,8 @@ set(PROJECT_SOURCES
         src/math/mat4.c
         src/math/rasmath.c
         src/math/common_math.c
+
+        ${STB_DIR}/stb.c
 )
 
 add_executable(${PROJECT_NAME} ${PROJECT_SOURCES})

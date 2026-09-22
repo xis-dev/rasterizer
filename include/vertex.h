@@ -8,6 +8,10 @@ typedef struct {
     vec3 normal;
     vec2 uv_0;
     vec2 uv_1;
+
+    struct {
+        vec3 world_pos;
+    } varyings;
 } vertex;
 
 // Pipeline vertex to travel through rendering pipeline

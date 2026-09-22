@@ -13,5 +13,5 @@ typedef struct {
 } shader_program;
 
 vertex default_vert_shader(const context* ctx, vertex v);
-colour4 default_frag_shader(const context* ctx, vertex* v);
+colour4 blinn_phong_frag_shader(const context* ctx, vertex* v);
 #endif

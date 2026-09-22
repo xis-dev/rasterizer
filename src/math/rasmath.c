@@ -25,7 +25,7 @@ vec3 vec3_convert_vec4(vec4 v) {
 }
 
 mat3 mat3_convert_mat4(mat4 m) {
-    return (mat3){.c0 = m.c0, .c1 = m.c1, .c2 = m.c2};
+    return (mat3){.c0 = vec3_convert_vec4(m.c0), .c1 = vec3_convert_vec4(m.c1), .c2 = vec3_convert_vec4(m.c2)};
 }
 
 mat4 mat4_convert_mat3(mat3 m, vec4 column_3, vec3 row_3) {

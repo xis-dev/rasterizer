@@ -1,14 +1,8 @@
 #include "context.h"
 
 void context_default_initialize(context *c) {
+    *c = (context){0};
 
-    c->vp_width = c->vp_height = 0;
-
-    c->uniform_buffer = NULL;
-    c->vertex_buffer = NULL;
-    c->index_buffer = NULL;
-
-    c->uniform_count = 0;
 }
 
 void context_set_viewport_size(context* c, int w, int h) {
@@ -19,8 +13,6 @@ void context_set_viewport_size(context* c, int w, int h) {
 
 void context_set_uniform_array(context *c, shader_value* uniforms, size_t count) {
 
-    c->uniform_count = count;
-    c->uniform_buffer = uniforms;
 
 
 }
@@ -89,11 +81,11 @@ void context_output_image_ppm(context *c, const char *file_name) {
 
 void context_cleanup(context *c) {
 
-    c->vertex_buffer  = NULL;
-    c->index_buffer   = NULL;
+    for (size_t i = 0; i < MAX_UNIFORMS; ++i) {
+        if (c->uniform_buffer[i].value_type != UTYPE_NULL || c->uniform_buffer[i].value != NULL) {
+            free(c->uniform_buffer[i].value);
+        }
+    }
 
-    c->uniform_count = 0;
-    c->uniform_buffer = NULL;
-
-    c->out_buffer = NULL;
+    *c = (context){0};
 }
