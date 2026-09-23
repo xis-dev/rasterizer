@@ -7,7 +7,7 @@ vec4 vec4_construct(float s) {
 
     vec4 out;
 
-    out.x = out.y = out.z = out.w = s;
+    out.e[0] = out.e[1] = out.e[2] = out.e[3] = s;
 
     return out;
 }
@@ -15,17 +15,17 @@ vec4 vec4_construct_sep(float x, float y, float z, float w) {
 
     vec4 out;
 
-    out.x = x;
-    out.y = y;
-    out.z = z;
-    out.w = w;
+    out.e[0] = x;
+    out.e[1] = y;
+    out.e[2] = z;
+    out.e[3] = w;
 
     return out;
 }
 
-void vec4_construct_mut(vec4* v, float s) { v->x = v->y = v->z = v->w = s;}
+void vec4_construct_mut(vec4* v, float s) { v->e[0] = v->e[1] = v->e[2] = v->e[3] = s;}
 
-float vec4_magnitude(vec4 v1){ return sqrt((v1.x * v1.x) + (v1.y * v1.y) + (v1.z * v1.z) + (v1.w * v1.w)); }
+float vec4_magnitude(vec4 v1){ return sqrt((v1.e[0] * v1.e[0]) + (v1.e[1] * v1.e[1]) + (v1.e[2] * v1.e[2]) + (v1.e[3] * v1.e[3])); }
 
 vec4 vec4_zero() {
 
@@ -41,10 +41,10 @@ vec4 vec4_add(vec4 v1, vec4 v2) {
 
 void vec4_add_mut(vec4* v1, vec4 v2) {
 
-    v1->x += v2.x;
-    v1->y += v2.y;
-    v1->z += v2.z;
-    v1->w += v2.w;
+    v1->e[0] += v2.e[0];
+    v1->e[1] += v2.e[1];
+    v1->e[2] += v2.e[2];
+    v1->e[3] += v2.e[3];
 
 }
 
@@ -59,10 +59,10 @@ vec4 vec4_sub(vec4 v1, vec4 v2) {
 
 void vec4_sub_mut(vec4* v1, vec4 v2) {
 
-    v1->x -= v2.x;
-    v1->y -= v2.y;
-    v1->z -= v2.z;
-    v1->w -= v2.w;
+    v1->e[0] -= v2.e[0];
+    v1->e[1] -= v2.e[1];
+    v1->e[2] -= v2.e[2];
+    v1->e[3] -= v2.e[3];
 
 }
 
@@ -76,10 +76,10 @@ vec4 vec4_scale(vec4 v1, float s) {
 
 void vec4_scale_mut(vec4* v1, float s) {
 
-    v1->x *= s;
-    v1->y *= s;
-    v1->z *= s;
-    v1->w *= s;
+    v1->e[0] *= s;
+    v1->e[1] *= s;
+    v1->e[2] *= s;
+    v1->e[3] *= s;
 }
 
 vec4 vec4_multiply(vec4 v1, vec4 v2) {
@@ -91,10 +91,10 @@ vec4 vec4_multiply(vec4 v1, vec4 v2) {
 
 void vec4_multiply_mut(vec4* v1, vec4 v2) {
 
-    v1->x *= v2.x;
-    v1->y *= v2.y;
-    v1->z *= v2.z;
-    v1->w *= v2.w;
+    v1->e[0] *= v2.e[0];
+    v1->e[1] *= v2.e[1];
+    v1->e[2] *= v2.e[2];
+    v1->e[3] *= v2.e[3];
 
 }
 
@@ -109,16 +109,16 @@ vec4 vec4_div(vec4 v1, vec4 v2) {
 void vec4_div_mut(vec4* v1, vec4 v2) {
 
     // todo: add equation function for floats to general math lib
-    v1->x = v2.x == 0.0 ? 0.0 : v1->x / v2.x;
-    v1->y = v2.y == 0.0 ? 0.0 : v1->y / v2.y;
-    v1->z = v2.z == 0.0 ? 0.0 : v1->z / v2.z;
-    v1->w = v2.w == 0.0 ? 0.0 : v1->w / v2.w;
+    v1->e[0] = v2.e[0] == 0.0 ? 0.0 : v1->e[0] / v2.e[0];
+    v1->e[1] = v2.e[1] == 0.0 ? 0.0 : v1->e[1] / v2.e[1];
+    v1->e[2] = v2.e[2] == 0.0 ? 0.0 : v1->e[2] / v2.e[2];
+    v1->e[3] = v2.e[3] == 0.0 ? 0.0 : v1->e[3] / v2.e[3];
 }
 
 
 
 float vec4_dot(vec4 v1, vec4 v2) {
-    return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z) + (v1.w * v2.w);
+    return (v1.e[0] * v2.e[0]) + (v1.e[1] * v2.e[1]) + (v1.e[2] * v2.e[2]) + (v1.e[3] * v2.e[3]);
 
 }
 
@@ -133,10 +133,10 @@ void vec4_normalize_mut(vec4* v) {
     }
 
     float one_over_length = 1.0f  / length;
-    v->x *= one_over_length;
-    v->y *= one_over_length;
-    v->z *= one_over_length;
-    v->w *= one_over_length;
+    v->e[0] *= one_over_length;
+    v->e[1] *= one_over_length;
+    v->e[2] *= one_over_length;
+    v->e[3] *= one_over_length;
 
 }
 
@@ -156,26 +156,25 @@ float vec4_dist(vec4 v1, vec4 v2) {
 float vec4_dist_sq(vec4 v1, vec4 v2) {
     vec4 d = vec4_sub(v2, v1);
 
-    return (d.x * d.x) + (d.y * d.y) + (d.z * d.z) + (d.w * d.w);
+    return (d.e[0] * d.e[0]) + (d.e[1] * d.e[1]) + (d.e[2] * d.e[2]) + (d.e[3] * d.e[3]);
 }
 
 vec4 vec4_lerp(vec4 v1, vec4 v2, float t) {
 
     vec4 out;
-    out.x = lerp_f(v1.x, v2.x, t);
-    out.y = lerp_f(v1.y, v2.y, t);
-    out.z = lerp_f(v1.z, v2.z, t);
-    out.w = lerp_f(v1.w, v2.w, t);
+    out.e[0] = lerp_f(v1.e[0], v2.e[0], t);
+    out.e[1] = lerp_f(v1.e[1], v2.e[1], t);
+    out.e[2] = lerp_f(v1.e[2], v2.e[2], t);
+    out.e[3] = lerp_f(v1.e[3], v2.e[3], t);
 
     return out;
 }
 
 
 bool vec4_equals(vec4 v1, vec4 v2) {
-    return  v1.x == v2.x &&
-            v1.y == v2.y &&
-	        v1.z == v2.z &&
-	        v1.w == v2.w;
+    return  v1.e[0] == v2.e[0] &&
+            v1.e[1] == v2.e[1] &&
+	        v1.e[2] == v2.e[2] &&
+	        v1.e[3] == v2.e[3];
 
 }
-

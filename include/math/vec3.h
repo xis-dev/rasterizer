@@ -10,10 +10,7 @@
 */
 typedef struct vec3 {
 
-    float x;
-    float y;
-    float z;
-
+    float e[3];
 } vec3;
 
 typedef vec3 colour3;

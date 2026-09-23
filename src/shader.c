@@ -1,7 +1,11 @@
 #include "shader.h"
 
+#include <tgmath.h>
+
 #include "context.h"
 #include "shader_value.h"
+#include "texture.h"
+#include "rasmath.h"
 
 vertex default_vert_shader(const context *ctx, vertex v) {
 
@@ -25,16 +29,24 @@ colour4 blinn_phong_frag_shader(const context* ctx, vertex* v) {
     vec3 frag_to_light = vec3_sub(ctx->point_lights[0].position, v->varyings.world_pos);
     float dist_to_light = vec3_magnitude(frag_to_light);
 
+    float light_intensity = 1.0f / (ctx->point_lights[0].attenuation.constant +
+                                    ctx->point_lights[0].attenuation.linear * dist_to_light +
+                                    ctx->point_lights[0].attenuation.linear * (dist_to_light * dist_to_light));
+    light_intensity *= ctx->point_lights[0].intensity;
+
     vec3_normalize_mut(&frag_to_light);
     
     float ambient = ctx->material.ambient;
 
     vec3 diffuse_color;
-    sv_get_value(ctx->uniform_buffer[UNIFORM_SLOT_7], &diffuse_color);
+    texture_read_into_colour(ctx->textures[0], (int)(v->uv_0.e[0] * ctx->textures[0]->width), (int)(v->uv_0.e[1] * ctx->textures[0]->height), (&diffuse_color));
 
-    vec3 diffuse = vec3_scale(diffuse_color, ctx->material.diffuse);
-    float specular;
+    float diff_factor = fmax(fabsf(vec3_dot(frag_to_light, v->normal)), 0.0f);
+    vec3 diffuse = vec3_scale(diffuse_color, ctx->material.diffuse * light_intensity * diff_factor);
 
-    colour4 out = (colour4){v->pos.x / vec4_magnitude(v->pos), v->pos.y / vec4_magnitude(v->pos), v->pos.z / vec4_magnitude(v->pos), 1.0f};
-    return out;
+    // TODO: Specular
+    colour3 out_col = vec3_multiply(ctx->material.color, diffuse);
+
+    return vec4_convert_vec3(diffuse_color, 1.0f);
+
 }

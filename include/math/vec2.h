@@ -11,12 +11,11 @@
  * 'x_convert_y' signifies a function converting an object of type x to y
 */
 typedef struct vec2 {
-
-    float x;
-    float y;
-
+    float e[2];
 } vec2;
 
+typedef vec2 colour2;
+typedef vec2 point2;
 
 // Initialize vector with the same scalar value in all elements
 vec2 vec2_construct(float s);

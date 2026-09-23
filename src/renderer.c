@@ -17,20 +17,20 @@ void process_source_triangle(const context *ctx, vertex v1, vertex v2, vertex v3
 
     for (int i = 0; i < clipped.count; i += 3) {
 
-        float one_o_w0 = 1.0f / clipped.data[i].pos.w;
-        clipped.data[i].pos.x *= one_o_w0;
-        clipped.data[i].pos.y *= one_o_w0;
-        clipped.data[i].pos.z *= one_o_w0;
+        float one_o_w0 = 1.0f / clipped.data[i].pos.e[3];
+        clipped.data[i].pos.e[0] *= one_o_w0;
+        clipped.data[i].pos.e[1] *= one_o_w0;
+        clipped.data[i].pos.e[2] *= one_o_w0;
 
-        float one_o_w1 = 1.0f / clipped.data[i + 1].pos.w;
-        clipped.data[i + 1].pos.x *= one_o_w1;
-        clipped.data[i + 1].pos.y *= one_o_w1;
-        clipped.data[i + 1].pos.z *= one_o_w1;
+        float one_o_w1 = 1.0f / clipped.data[i + 1].pos.e[3];
+        clipped.data[i + 1].pos.e[0] *= one_o_w1;
+        clipped.data[i + 1].pos.e[1] *= one_o_w1;
+        clipped.data[i + 1].pos.e[2] *= one_o_w1;
 
-        float one_o_w2 = 1.0f / clipped.data[i + 2].pos.w;
-        clipped.data[i + 2].pos.x *= one_o_w2;
-        clipped.data[i + 2].pos.y *= one_o_w2;
-        clipped.data[i + 2].pos.z *= one_o_w2;
+        float one_o_w2 = 1.0f / clipped.data[i + 2].pos.e[3];
+        clipped.data[i + 2].pos.e[0] *= one_o_w2;
+        clipped.data[i + 2].pos.e[1] *= one_o_w2;
+        clipped.data[i + 2].pos.e[2] *= one_o_w2;
 
         rasterize_triangle(ctx,
                            clipped.data[i],
@@ -45,17 +45,17 @@ static vec4 ndc_to_screen(vec4 ndc, int screen_w, int screen_h) {
     // Normalize ndc from [-1, 1] to [0, 1]
     vec4 out;
 
-    out.x = (float)trunc((ndc.x * 0.5f + 0.5f) * (float)(screen_w - 1));
-    out.y = (float)trunc((ndc.y * 0.5f + 0.5f) * (float)(screen_h - 1));
-    out.z = ndc.z;
-    out.w = ndc.w;
+    out.e[0] = (float)trunc((ndc.e[0] * 0.5f + 0.5f) * (float)(screen_w - 1));
+    out.e[1] = (float)trunc((ndc.e[1] * 0.5f + 0.5f) * (float)(screen_h - 1));
+    out.e[2] = ndc.e[2];
+    out.e[3] = ndc.e[3];
 
     return out;
 }
 
 // Edge function for a set of clockwise vertices returning positive if on the right side of plane
 static float edge_function(vec2 a, vec2 b, vec2 c) {
-    return (c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x);
+    return (c.e[0] - a.e[0]) * (b.e[1] - a.e[1]) - (c.e[1] - a.e[1]) * (b.e[0] - a.e[0]);
 }
 
 // Compute perspective correct barycentric coordinates
@@ -65,15 +65,15 @@ static float edge_function(vec2 a, vec2 b, vec2 c) {
 static vec3 compute_barycentric(vec4 v1, float area_1, vec4 v2, float area_2, vec4 v3, float area_3) {
 
     // Find areas in camera/eye space
-    float area_1_eye = v2.w * v3.w * area_1;
-    float area_2_eye = v3.w * v1.w * area_2;
-    float area_3_eye = v1.w * v2.w * area_3;
+    float area_1_eye = v2.e[3] * v3.e[3] * area_1;
+    float area_2_eye = v3.e[3] * v1.e[3] * area_2;
+    float area_3_eye = v1.e[3] * v2.e[3] * area_3;
     float total_area = area_1_eye + area_2_eye + area_3_eye;
 
     vec3 b_out;
-    b_out.x = area_1_eye / total_area;
-    b_out.y = area_2_eye / total_area;
-    b_out.z = area_3_eye / total_area;
+    b_out.e[0] = area_1_eye / total_area;
+    b_out.e[1] = area_2_eye / total_area;
+    b_out.e[2] = area_3_eye / total_area;
 
     return b_out;
 }
@@ -82,21 +82,21 @@ static vertex get_bary_interpolated_vertex(vertex v1, vertex v2, vertex v3, vec3
 
     vertex out;
 
-    out.pos = vec4_add(vec4_add(vec4_scale(v1.pos, b.x),
-                                vec4_scale(v2.pos, b.y)),
-                                vec4_scale(v3.pos, b.z));
+    out.pos = vec4_add(vec4_add(vec4_scale(v1.pos, b.e[0]),
+                                vec4_scale(v2.pos, b.e[1])),
+                                vec4_scale(v3.pos, b.e[2]));
 
-    out.normal = vec3_add(vec3_add(vec3_scale(v1.normal, b.x),
-                                   vec3_scale(v2.normal, b.y)),
-                                   vec3_scale(v3.normal, b.z));
+    out.normal = vec3_add(vec3_add(vec3_scale(v1.normal, b.e[0]),
+                                   vec3_scale(v2.normal, b.e[1])),
+                                   vec3_scale(v3.normal, b.e[2]));
 
-    out.uv_0 = vec2_add(vec2_add(vec2_scale(v1.uv_0, b.x),
-                                 vec2_scale(v2.uv_0, b.y)),
-                                 vec2_scale(v3.uv_0, b.z));
+    out.uv_0 = vec2_add(vec2_add(vec2_scale(v1.uv_0, b.e[0]),
+                                 vec2_scale(v2.uv_0, b.e[1])),
+                                 vec2_scale(v3.uv_0, b.e[2]));
 
-    out.uv_1 = vec2_add(vec2_add(vec2_scale(v1.uv_1, b.x),
-                                 vec2_scale(v2.uv_1, b.y)),
-                                 vec2_scale(v3.uv_1, b.z));
+    out.uv_1 = vec2_add(vec2_add(vec2_scale(v1.uv_1, b.e[0]),
+                                 vec2_scale(v2.uv_1, b.e[1])),
+                                 vec2_scale(v3.uv_1, b.e[2]));
 
     return out;
 
@@ -121,22 +121,22 @@ void rasterize_triangle(const context* ctx, vertex v1, vertex v2, vertex v3) {
     v2.pos = ndc_to_screen(v2.pos, ctx->vp_width, ctx->vp_height);
     v3.pos = ndc_to_screen(v3.pos, ctx->vp_width, ctx->vp_height);
 
-    int xMin = (int)v1.pos.x;
-    int yMin = (int)v1.pos.y;
-    int xMax = (int)v1.pos.x;
-    int yMax = (int)v1.pos.y;
+    int xMin = (int)v1.pos.e[0];
+    int yMin = (int)v1.pos.e[1];
+    int xMax = (int)v1.pos.e[0];
+    int yMax = (int)v1.pos.e[1];
 
 
     // Find bounding box
-    if ((int)v2.pos.x < xMin) xMin = (int)v2.pos.x;
-    if ((int)v2.pos.y < yMin) yMin = (int)v2.pos.y;
-    if ((int)v2.pos.x > xMax) xMax = (int)v2.pos.x;
-    if ((int)v2.pos.y > yMax) yMax = (int)v2.pos.y;
+    if ((int)v2.pos.e[0] < xMin) xMin = (int)v2.pos.e[0];
+    if ((int)v2.pos.e[1] < yMin) yMin = (int)v2.pos.e[1];
+    if ((int)v2.pos.e[0] > xMax) xMax = (int)v2.pos.e[0];
+    if ((int)v2.pos.e[1] > yMax) yMax = (int)v2.pos.e[1];
 
-    if ((int)v3.pos.x < xMin) xMin = (int)v3.pos.x;
-    if ((int)v3.pos.y < yMin) yMin = (int)v3.pos.y;
-    if ((int)v3.pos.x > xMax) xMax = (int)v3.pos.x;
-    if ((int)v3.pos.y > yMax) yMax = (int)v3.pos.y;
+    if ((int)v3.pos.e[0] < xMin) xMin = (int)v3.pos.e[0];
+    if ((int)v3.pos.e[1] < yMin) yMin = (int)v3.pos.e[1];
+    if ((int)v3.pos.e[0] > xMax) xMax = (int)v3.pos.e[0];
+    if ((int)v3.pos.e[1] > yMax) yMax = (int)v3.pos.e[1];
 
     for (int y = yMin; y <= yMax; ++y) {
 
@@ -161,12 +161,12 @@ void rasterize_triangle(const context* ctx, vertex v1, vertex v2, vertex v3) {
                 vertex fragment_vert = get_bary_interpolated_vertex(v1, v2, v3, b);
 
                 // Ensure exact coords, incase of floating point creep
-                fragment_vert.pos.x = (float)x;
-                fragment_vert.pos.y = (float)y;
+                fragment_vert.pos.e[0] = (float)x;
+                fragment_vert.pos.e[1] = (float)y;
 
                 colour4 frag_colour = ctx->shader.fragment_shader(ctx, &fragment_vert);
 
-                if (depth_test(ctx, x, y, fragment_vert.pos.z)) {
+                if (depth_test(ctx, x, y, fragment_vert.pos.e[2])) {
                     context_write_output(ctx, x, y, frag_colour);
                 }
             }
@@ -192,6 +192,8 @@ static vertex get_interpolated_vertex(vertex a, vertex b, float t) {
     out.normal = vec3_lerp(a.normal, b.normal, t);
     out.uv_0   = vec2_lerp(a.uv_0, b.uv_0, t);
     out.uv_1   = vec2_lerp(a.uv_1, b.uv_1, t);
+
+    out.varyings.world_pos = vec3_lerp(a.varyings.world_pos, b.varyings.world_pos, t);
 
     return out;
 }

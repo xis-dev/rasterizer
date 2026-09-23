@@ -60,9 +60,9 @@ void context_output_image_ppm(context *c, const char *file_name) {
     for (int y = (c->vp_height - 1); y >= 0; --y) {
         for (int x = 0; x < c->vp_width; ++x) {
 
-            float r_f = c->out_buffer->colour_buffer[(c->vp_width * y) + x].x;
-            float g_f = c->out_buffer->colour_buffer[(c->vp_width * y) + x].y;
-            float b_f = c->out_buffer->colour_buffer[(c->vp_width * y) + x].z;
+            float r_f = c->out_buffer->colour_buffer[(c->vp_width * y) + x].e[0];
+            float g_f = c->out_buffer->colour_buffer[(c->vp_width * y) + x].e[1];
+            float b_f = c->out_buffer->colour_buffer[(c->vp_width * y) + x].e[2];
 
             r_f = r_f > 1.0f ? 1.0f : r_f < 0.0f ? 0.0f : r_f;
             g_f = g_f > 1.0f ? 1.0f : g_f < 0.0f ? 0.0f : g_f;

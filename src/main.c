@@ -6,6 +6,7 @@
 #include "../include/math/vec3.h"
 
 #include "renderer.h"
+#include "texture.h"
 
 #define WIDTH 1600
 #define HEIGHT 900
@@ -14,9 +15,9 @@
 int main(int argc, char* argv[]) {
 
     mat4 model = mat4_construct_diagonal(1.0f);
+    //model = mat4_scale_uniform(model, 5.0f);
     model = mat4_rotate_by_axis(model, 45.0f, (vec3){1.0f, 0.0f, 0.0f});
     model = mat4_translate(model, (vec3){5.f, 0.0f, 10.2f});
-
     mat4 view = mat4_lookat((vec3){0.0f, 0.0f, 0.0f}, (vec3){0.0f, 0.0f, 1.0f});
 
     mat4 projection = mat4_projection(0.1f, 1000.0f, 45.0f, 16.0f/9.0f);
@@ -36,10 +37,10 @@ int main(int argc, char* argv[]) {
     context_set_viewport_size(&ctx, 1600, 900);
 
     vertex vertices[4] = {
-        (vertex){.pos = (vec4){-1.0f, -1.0f, 0.0f, 1.0f}},
-        (vertex){.pos = (vec4){-1.0f,  1.0f, 0.0f, 1.0f}},
-        (vertex){.pos = (vec4){ 1.0f,  1.0f, 0.0f, 1.0f}},
-        (vertex){.pos = (vec4){ 1.0f, -1.0f, 0.0f, 1.0f}}
+        (vertex){.pos = (vec4){-1.0f, -1.0f, 0.0f, 1.0f}, .normal = (vec3){0.0f, 0.0f, 1.0f}, .uv_0 = (vec2){0.0f, 0.0f}},
+        (vertex){.pos = (vec4){-1.0f,  1.0f, 0.0f, 1.0f}, .normal = (vec3){0.0f, 0.0f, 1.0f}, .uv_0 = (vec2){0.0f, 1.0f}},
+        (vertex){.pos = (vec4){ 1.0f,  1.0f, 0.0f, 1.0f}, .normal = (vec3){0.0f, 0.0f, 1.0f}, .uv_0 = (vec2){1.0f, 1.0f}},
+        (vertex){.pos = (vec4){ 1.0f, -1.0f, 0.0f, 1.0f}, .normal = (vec3){0.0f, 0.0f, 1.0f}, .uv_0 = (vec2){1.0f, 0.0f}}
     };
 
     uint32_t indices[6] = {
@@ -47,17 +48,32 @@ int main(int argc, char* argv[]) {
         3, 1, 2
     };
 
-    ctx.vertex_buffer = vertices;
-    ctx.index_buffer = indices;
-
-    ctx.shader = (shader_program){.vertex_shader = &default_vert_shader, .fragment_shader = &default_frag_shader};
+    texture house_tex;
+    texture_load_texture(&house_tex, "../doctor-house.png", true);
 
     framebuffer basic;
     framebuffer_construct(&basic, 1600, 900);
 
     ctx.out_buffer = &basic;
 
-    context_clear_colour(&ctx, (vec4){0.0f, 0.0f, 0.0f});
+    ctx.vertex_buffer = vertices;
+    ctx.index_buffer = indices;
+
+    ctx.shader = (shader_program){.vertex_shader = &default_vert_shader, .fragment_shader = &blinn_phong_frag_shader};
+
+    ctx.textures[TEXTURE_SLOT_1] = &house_tex;
+
+    point_light light = {0};
+    light.intensity = 1.0f;
+    p_light_atten_from_radius(&light, 50.0f);
+
+    ctx.point_lights[0] = light;
+
+    material random_mat = {.color = (colour3){1.0f, 1.0f, 0.0f},  .diffuse = 1.0f};
+
+    ctx.material = random_mat;
+
+    context_clear_colour(&ctx, (vec4){0.0f, 1.0f, 0.0f});
     context_clear_depth(&ctx);
 
     draw_indexed_triangles(&ctx, 6);

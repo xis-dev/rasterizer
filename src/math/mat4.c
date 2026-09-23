@@ -14,10 +14,10 @@ mat4 mat4_construct_fill(float s) {
 mat4 mat4_construct_diagonal(float s) {
     mat4 out;
 
-    out.c0 = (vec4){.x = s};
-    out.c1 = (vec4){.y = s};
-    out.c2 = (vec4){.z = s};
-    out.c3 = (vec4){.w = s};
+    out.c0 = (vec4){.e[0] = s};
+    out.c1 = (vec4){.e[1] = s};
+    out.c2 = (vec4){.e[2] = s};
+    out.c3 = (vec4){.e[3] = s};
 
     return out;
 }
@@ -159,53 +159,53 @@ void mat4_mult_mut(mat4 m, mat4* m_out) {
 
     mat4 temp= *m_out;
 
-    m_out->c0 = (vec4){m.c0.x * temp.c0.x + m.c1.x * temp.c0.y +
-		    m.c2.x * temp.c0.z + m.c3.x * temp.c0.w,
+    m_out->c0 = (vec4){m.c0.e[0] * temp.c0.e[0] + m.c1.e[0] * temp.c0.e[1] +
+		    m.c2.e[0] * temp.c0.e[2] + m.c3.e[0] * temp.c0.e[3],
 
-		    m.c0.y * temp.c0.x + m.c1.y * temp.c0.y +
-		    m.c2.y * temp.c0.z + m.c3.y * temp.c0.w,
+		    m.c0.e[1] * temp.c0.e[0] + m.c1.e[1] * temp.c0.e[1] +
+		    m.c2.e[1] * temp.c0.e[2] + m.c3.e[1] * temp.c0.e[3],
 
-		    m.c0.z * temp.c0.x + m.c1.z * temp.c0.y +
-		    m.c2.z * temp.c0.z + m.c3.z * temp.c0.w,
+		    m.c0.e[2] * temp.c0.e[0] + m.c1.e[2] * temp.c0.e[1] +
+		    m.c2.e[2] * temp.c0.e[2] + m.c3.e[2] * temp.c0.e[3],
 
-		    m.c0.w * temp.c0.x + m.c1.w * temp.c0.y +
-		    m.c2.w * temp.c0.z + m.c3.w * temp.c0.w};
+		    m.c0.e[3] * temp.c0.e[0] + m.c1.e[3] * temp.c0.e[1] +
+		    m.c2.e[3] * temp.c0.e[2] + m.c3.e[3] * temp.c0.e[3]};
 
-    m_out->c1 = (vec4){m.c0.x * temp.c1.x + m.c1.x * temp.c1.y +
-		    m.c2.x * temp.c1.z + m.c3.x * temp.c1.w,
+    m_out->c1 = (vec4){m.c0.e[0] * temp.c1.e[0] + m.c1.e[0] * temp.c1.e[1] +
+		    m.c2.e[0] * temp.c1.e[2] + m.c3.e[0] * temp.c1.e[3],
 
-		    m.c0.y * temp.c1.x + m.c1.y * temp.c1.y +
-		    m.c2.y * temp.c1.z + m.c3.y * temp.c1.w,
+		    m.c0.e[1] * temp.c1.e[0] + m.c1.e[1] * temp.c1.e[1] +
+		    m.c2.e[1] * temp.c1.e[2] + m.c3.e[1] * temp.c1.e[3],
 
-		    m.c0.z * temp.c1.x + m.c1.z * temp.c1.y +
-		    m.c2.z * temp.c1.z + m.c3.z * temp.c1.w,
+		    m.c0.e[2] * temp.c1.e[0] + m.c1.e[2] * temp.c1.e[1] +
+		    m.c2.e[2] * temp.c1.e[2] + m.c3.e[2] * temp.c1.e[3],
 
-		    m.c0.w * temp.c1.x + m.c1.w * temp.c1.y +
-		    m.c2.w * temp.c1.z + m.c3.w * temp.c1.w};
+		    m.c0.e[3] * temp.c1.e[0] + m.c1.e[3] * temp.c1.e[1] +
+		    m.c2.e[3] * temp.c1.e[2] + m.c3.e[3] * temp.c1.e[3]};
 
-    m_out->c2 = (vec4){m.c0.x * temp.c2.x + m.c1.x * temp.c2.y +
-		    m.c2.x * temp.c2.z + m.c3.x * temp.c2.w,
+    m_out->c2 = (vec4){m.c0.e[0] * temp.c2.e[0] + m.c1.e[0] * temp.c2.e[1] +
+		    m.c2.e[0] * temp.c2.e[2] + m.c3.e[0] * temp.c2.e[3],
 
-		    m.c0.y * temp.c2.x + m.c1.y * temp.c2.y +
-		    m.c2.y * temp.c2.z + m.c3.y * temp.c2.w,
+		    m.c0.e[1] * temp.c2.e[0] + m.c1.e[1] * temp.c2.e[1] +
+		    m.c2.e[1] * temp.c2.e[2] + m.c3.e[1] * temp.c2.e[3],
 
-		    m.c0.z * temp.c2.x + m.c1.z * temp.c2.y +
-		    m.c2.z * temp.c2.z + m.c3.z * temp.c2.w,
+		    m.c0.e[2] * temp.c2.e[0] + m.c1.e[2] * temp.c2.e[1] +
+		    m.c2.e[2] * temp.c2.e[2] + m.c3.e[2] * temp.c2.e[3],
 
-		    m.c0.w * temp.c2.x + m.c1.w * temp.c2.y +
-		    m.c2.w * temp.c2.z + m.c3.w * temp.c2.w};
+		    m.c0.e[3] * temp.c2.e[0] + m.c1.e[3] * temp.c2.e[1] +
+		    m.c2.e[3] * temp.c2.e[2] + m.c3.e[3] * temp.c2.e[3]};
 
-    m_out->c3 = (vec4){m.c0.x * temp.c3.x + m.c1.x * temp.c3.y +
-		    m.c2.x * temp.c3.z + m.c3.x * temp.c3.w,
+    m_out->c3 = (vec4){m.c0.e[0] * temp.c3.e[0] + m.c1.e[0] * temp.c3.e[1] +
+		    m.c2.e[0] * temp.c3.e[2] + m.c3.e[0] * temp.c3.e[3],
 
-		    m.c0.y * temp.c3.x + m.c1.y * temp.c3.y +
-		    m.c2.y * temp.c3.z + m.c3.y * temp.c3.w,
+		    m.c0.e[1] * temp.c3.e[0] + m.c1.e[1] * temp.c3.e[1] +
+		    m.c2.e[1] * temp.c3.e[2] + m.c3.e[1] * temp.c3.e[3],
 
-		    m.c0.z * temp.c3.x + m.c1.z * temp.c3.y +
-		    m.c2.z * temp.c3.z + m.c3.z * temp.c3.w,
+		    m.c0.e[2] * temp.c3.e[0] + m.c1.e[2] * temp.c3.e[1] +
+		    m.c2.e[2] * temp.c3.e[2] + m.c3.e[2] * temp.c3.e[3],
 
-		    m.c0.w * temp.c3.x + m.c1.w * temp.c3.y +
-		    m.c2.w * temp.c3.z + m.c3.w * temp.c3.w};
+		    m.c0.e[3] * temp.c3.e[0] + m.c1.e[3] * temp.c3.e[1] +
+		    m.c2.e[3] * temp.c3.e[2] + m.c3.e[3] * temp.c3.e[3]};
 }
 
 mat4 mat4_get_transpose(mat4 m) {
@@ -218,10 +218,10 @@ void mat4_transpose(mat4* m) {
 
     mat4 temp = *m;
 
-    m->c0 = (vec4){temp.c0.x, temp.c1.x, temp.c2.x, temp.c3.x};
-    m->c1 = (vec4){temp.c0.y, temp.c1.y, temp.c2.y, temp.c3.y};
-    m->c2 = (vec4){temp.c0.z, temp.c1.z, temp.c2.z, temp.c3.z};
-    m->c3 = (vec4){temp.c0.w, temp.c1.w, temp.c2.w, temp.c3.w};
+    m->c0 = (vec4){temp.c0.e[0], temp.c1.e[0], temp.c2.e[0], temp.c3.e[0]};
+    m->c1 = (vec4){temp.c0.e[1], temp.c1.e[1], temp.c2.e[1], temp.c3.e[1]};
+    m->c2 = (vec4){temp.c0.e[2], temp.c1.e[2], temp.c2.e[2], temp.c3.e[2]};
+    m->c3 = (vec4){temp.c0.e[3], temp.c1.e[3], temp.c2.e[3], temp.c3.e[3]};
 }
 
 mat4 mat4_rotate_by_axis(mat4 m, double angle_deg, vec3 axis) {
@@ -230,17 +230,17 @@ mat4 mat4_rotate_by_axis(mat4 m, double angle_deg, vec3 axis) {
 
 	double angle_rad = (angle_deg * CM_PI) / 180.0f;
 
-    out.c0 = (vec4){(axis.x * axis.x) * (1 - cos(angle_rad)) + cos(angle_rad),
-		    (axis.x * axis.y) * (1 - cos(angle_rad)) + axis.z * sin(angle_rad),
-		    (axis.x * axis.z) * (1 - cos(angle_rad)) - axis.y * sin(angle_rad), 0.0};
+    out.c0 = (vec4){(axis.e[0] * axis.e[0]) * (1 - cos(angle_rad)) + cos(angle_rad),
+		    (axis.e[0] * axis.e[1]) * (1 - cos(angle_rad)) + axis.e[2] * sin(angle_rad),
+		    (axis.e[0] * axis.e[2]) * (1 - cos(angle_rad)) - axis.e[1] * sin(angle_rad), 0.0};
 
-    out.c1 = (vec4){(axis.x * axis.y) * (1 - cos(angle_rad)) - axis.z * sin(angle_rad),
-		    (axis.y * axis.y) * (1 - cos(angle_rad)) + cos(angle_rad),
-		    (axis.y * axis.z) * (1 - cos(angle_rad)) + axis.x * sin(angle_rad), 0.0};
+    out.c1 = (vec4){(axis.e[0] * axis.e[1]) * (1 - cos(angle_rad)) - axis.e[2] * sin(angle_rad),
+		    (axis.e[1] * axis.e[1]) * (1 - cos(angle_rad)) + cos(angle_rad),
+		    (axis.e[1] * axis.e[2]) * (1 - cos(angle_rad)) + axis.e[0] * sin(angle_rad), 0.0};
 
-    out.c2 = (vec4){(axis.x * axis.z) * (1 - cos(angle_rad)) + axis.y * sin(angle_rad),
-		    (axis.y * axis.z) * (1 - cos(angle_rad)) - axis.x * sin(angle_rad),
-		    (axis.z * axis.z) * (1 - cos(angle_rad)) + cos(angle_rad), 0.0};
+    out.c2 = (vec4){(axis.e[0] * axis.e[2]) * (1 - cos(angle_rad)) + axis.e[1] * sin(angle_rad),
+		    (axis.e[1] * axis.e[2]) * (1 - cos(angle_rad)) - axis.e[0] * sin(angle_rad),
+		    (axis.e[2] * axis.e[2]) * (1 - cos(angle_rad)) + cos(angle_rad), 0.0};
 
     out.c3 = (vec4){0.0, 0.0, 0.0, 1.0};
 
@@ -252,17 +252,17 @@ mat4 mat4_scale_by_axis(mat4 m, double s, vec3 axis) {
 
     mat4 out;
 
-    out.c0 = (vec4){1 + (s - 1) * (axis.x * axis.x),
-			(s - 1) * (axis.x * axis.y),
-			(s - 1) * (axis.x * axis.z), 0.0};
+    out.c0 = (vec4){1 + (s - 1) * (axis.e[0] * axis.e[0]),
+			(s - 1) * (axis.e[0] * axis.e[1]),
+			(s - 1) * (axis.e[0] * axis.e[2]), 0.0};
 
-    out.c1 = (vec4){	(s - 1) * (axis.y * axis.x),
-		    1 + (s - 1) * (axis.y * axis.y),
-			(s - 1) * (axis.y * axis.z), 0.0};
+    out.c1 = (vec4){	(s - 1) * (axis.e[1] * axis.e[0]),
+		    1 + (s - 1) * (axis.e[1] * axis.e[1]),
+			(s - 1) * (axis.e[1] * axis.e[2]), 0.0};
 
-    out.c2 = (vec4){	(s - 1) * (axis.z * axis.x),
-			(s - 1) * (axis.z * axis.y),
-		    1 + (s - 1) * (axis.z * axis.z), 0.0};
+    out.c2 = (vec4){	(s - 1) * (axis.e[2] * axis.e[0]),
+			(s - 1) * (axis.e[2] * axis.e[1]),
+		    1 + (s - 1) * (axis.e[2] * axis.e[2]), 0.0};
 
     out.c3 = (vec4){0.0, 0.0, 0.0, 1.0};
 
@@ -273,9 +273,9 @@ mat4 mat4_scale_by_axis(mat4 m, double s, vec3 axis) {
 
 mat4 mat4_translate(mat4 m, vec3 translation) {
 
-    m.c3.x += translation.x;
-    m.c3.y += translation.y;
-    m.c3.z += translation.z;
+    m.c3.e[0] += translation.e[0];
+    m.c3.e[1] += translation.e[1];
+    m.c3.e[2] += translation.e[2];
 
     return m;
 }
@@ -287,9 +287,9 @@ mat4 mat4_scale_uniform(mat4 m, double s) {
 
 mat4 mat4_scale(mat4 m, vec3 scale) {
 
-    m.c0.x *= scale.x;
-    m.c1.y *= scale.y;
-    m.c2.z *= scale.z;
+    m.c0.e[0] *= scale.e[0];
+    m.c1.e[1] *= scale.e[1];
+    m.c2.e[2] *= scale.e[2];
 
     return m;
 }
@@ -297,10 +297,10 @@ mat4 mat4_scale(mat4 m, vec3 scale) {
 vec4 mat4_transform(mat4 m, vec4 v) {
 
 	vec4 out;
-	out.x = v.x * m.c0.x + v.y * m.c1.x + v.z * m.c2.x + v.w * m.c3.x;
-	out.y = v.x * m.c0.y + v.y * m.c1.y + v.z * m.c2.y + v.w * m.c3.y;
-	out.z = v.x * m.c0.z + v.y * m.c1.z + v.z * m.c2.z + v.w * m.c3.z;
-	out.w = v.x * m.c0.w + v.y * m.c1.w + v.z * m.c2.w + v.w * m.c3.w;
+	out.e[0] = v.e[0] * m.c0.e[0] + v.e[1] * m.c1.e[0] + v.e[2] * m.c2.e[0] + v.e[3] * m.c3.e[0];
+	out.e[1] = v.e[0] * m.c0.e[1] + v.e[1] * m.c1.e[1] + v.e[2] * m.c2.e[1] + v.e[3] * m.c3.e[1];
+	out.e[2] = v.e[0] * m.c0.e[2] + v.e[1] * m.c1.e[2] + v.e[2] * m.c2.e[2] + v.e[3] * m.c3.e[2];
+	out.e[3] = v.e[0] * m.c0.e[3] + v.e[1] * m.c1.e[3] + v.e[2] * m.c2.e[3] + v.e[3] * m.c3.e[3];
 
 	return out;
 
@@ -312,11 +312,11 @@ mat4 mat4_lookat(vec3 eye, vec3 target) {
 
 	vec3 cam_forward = vec3_get_normalized(vec3_sub(target, eye));
 
-	vec3 g_up = {.x = 0.0f, .y = 1.0f, .z = 0.0f};
+	vec3 g_up = {.e[0] = 0.0f, .e[1] = 1.0f, .e[2] = 0.0f};
 
 	// Generic up and camera forward are near parallel, use different vector
 	if (fabsf(vec3_dot(g_up, cam_forward)) >= 0.99999f) {
-		g_up = (vec3){.x = 0.0f, .y = 0.0f, .z = 1.0f};
+		g_up = (vec3){.e[0] = 0.0f, .e[1] = 0.0f, .e[2] = 1.0f};
 	}
 
 	// Take only portion of g_up perpendicular to cam_forward
@@ -324,9 +324,9 @@ mat4 mat4_lookat(vec3 eye, vec3 target) {
 
 	vec3 cam_right = vec3_cross(cam_up, cam_forward);
 
-	out.c0 = (vec4){cam_right.x, cam_up.x, cam_forward.x, 0.0f};
-	out.c1 = (vec4){cam_right.y, cam_up.y, cam_forward.y, 0.0f};
-	out.c2 = (vec4){cam_right.z, cam_up.z, cam_forward.z, 0.0f};
+	out.c0 = (vec4){cam_right.e[0], cam_up.e[0], cam_forward.e[0], 0.0f};
+	out.c1 = (vec4){cam_right.e[1], cam_up.e[1], cam_forward.e[1], 0.0f};
+	out.c2 = (vec4){cam_right.e[2], cam_up.e[2], cam_forward.e[2], 0.0f};
 	out.c3 = (vec4){-vec3_dot(cam_right, eye), -vec3_dot(cam_up,eye), -vec3_dot(cam_forward, eye), 1.0f};
 
 	return out;

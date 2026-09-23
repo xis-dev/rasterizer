@@ -54,7 +54,7 @@ typedef struct context {
     shader_program shader;
     material material;
 
-    texture_rgba* textures[MAX_TEXTURES];
+    texture* textures[MAX_TEXTURES];
     framebuffer* out_buffer;
 
     int vp_width;

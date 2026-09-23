@@ -35,6 +35,9 @@ set(PROJECT_SOURCES
         src/shader.c
         src/framebuffer.c
         src/light.c
+        src/light.c
+        src/material.c
+        src/texture.c
 
         src/math/vec2.c
         src/math/vec3.c

@@ -9,12 +9,7 @@
  * '_sep' signifies a vector is required but the expected arguments are seperated into its individual x,y, z components
 */
 typedef struct vec4 {
-
-    float x;
-    float y;
-    float z;
-    float w;
-
+    float e[4];
 } vec4;
 
 typedef vec4 colour4;
