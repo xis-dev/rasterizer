@@ -98,6 +98,9 @@ static vertex get_bary_interpolated_vertex(vertex v1, vertex v2, vertex v3, vec3
                                  vec2_scale(v2.uv_1, b.e[1])),
                                  vec2_scale(v3.uv_1, b.e[2]));
 
+    out.colour = vec3_add(vec3_add(vec3_scale(v1.colour, b.e[0]),
+                                   vec3_scale(v2.colour, b.e[1])),
+                                   vec3_scale(v3.colour, b.e[2]));
     return out;
 
 }
@@ -260,7 +263,7 @@ polygon clip_triangle(vertex v1, vertex v2, vertex v3) {
 }
 
 void draw_indexed_triangles(const context *ctx, size_t index_count) {
-    for (size_t i = 0; i < index_count; i += 3) {
+    for (size_t i = 0; (i + 3) <= index_count; i += 3) {
         process_source_triangle(ctx,
                                 ctx->vertex_buffer[ctx->index_buffer[i]],
                                 ctx->vertex_buffer[ctx->index_buffer[i + 1]],

@@ -6,12 +6,14 @@ typedef struct {
 
     vec3 direction;
     float intensity;
+    colour3 colour;
 }directional_light;
 
 typedef struct {
 
     vec3 position;
     float intensity;
+    colour3 colour;
 
     struct {
         float radius;

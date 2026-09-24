@@ -5,6 +5,7 @@
 // Base vertex with its attributes
 typedef struct {
     vec4 pos;
+    vec3 colour;
     vec3 normal;
     vec2 uv_0;
     vec2 uv_1;

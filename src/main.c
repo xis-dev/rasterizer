@@ -16,8 +16,8 @@ int main(int argc, char* argv[]) {
 
     mat4 model = mat4_construct_diagonal(1.0f);
     //model = mat4_scale_uniform(model, 5.0f);
-    model = mat4_rotate_by_axis(model, 45.0f, (vec3){1.0f, 0.0f, 0.0f});
-    model = mat4_translate(model, (vec3){5.f, 0.0f, 10.2f});
+    //model = mat4_rotate_by_axis(model, 45.0f, (vec3){1.0f, 0.0f, 0.0f});
+    model = mat4_translate(model, (vec3){0.f, 0.0f, 10.2f});
     mat4 view = mat4_lookat((vec3){0.0f, 0.0f, 0.0f}, (vec3){0.0f, 0.0f, 1.0f});
 
     mat4 projection = mat4_projection(0.1f, 1000.0f, 45.0f, 16.0f/9.0f);
@@ -43,6 +43,13 @@ int main(int argc, char* argv[]) {
         (vertex){.pos = (vec4){ 1.0f, -1.0f, 0.0f, 1.0f}, .normal = (vec3){0.0f, 0.0f, 1.0f}, .uv_0 = (vec2){1.0f, 0.0f}}
     };
 
+
+    vertex triangle_vertices[4] = {
+        (vertex){.pos = (vec4){-1.0f, -1.0f, 0.0f, 1.0f}, .colour = (vec3){1.0f,0.0f, 0.0f}, .normal = (vec3){0.0f, 0.0f, 1.0f}, .uv_0 = (vec2){0.0f, 0.0f}},
+        (vertex){.pos = (vec4){ 0.0f,  1.0f, 0.0f, 1.0f}, .colour = (vec3){0.0f, 1.0f, 0.0f}, .normal = (vec3){0.0f, 0.0f, 1.0f}, .uv_0 = (vec2){0.0f, 1.0f}},
+        (vertex){.pos = (vec4){ 1.0f,  -1.0f, 0.0f, 1.0f}, .colour = (vec3){0.0f, 0.0f, 1.0f}, .normal = (vec3){0.0f, 0.0f, 1.0f}, .uv_0 = (vec2){1.0f, 1.0f}},
+    };
+
     uint32_t indices[6] = {
         0, 1, 3,
         3, 1, 2
@@ -56,10 +63,10 @@ int main(int argc, char* argv[]) {
 
     ctx.out_buffer = &basic;
 
-    ctx.vertex_buffer = vertices;
+    ctx.vertex_buffer = triangle_vertices;
     ctx.index_buffer = indices;
 
-    ctx.shader = (shader_program){.vertex_shader = &default_vert_shader, .fragment_shader = &blinn_phong_frag_shader};
+    ctx.shader = (shader_program){.vertex_shader = &default_vert_shader, .fragment_shader = &default_triangle_frag};
 
     ctx.textures[TEXTURE_SLOT_1] = &house_tex;
 
@@ -73,11 +80,12 @@ int main(int argc, char* argv[]) {
 
     ctx.material = random_mat;
 
-    context_clear_colour(&ctx, (vec4){0.0f, 1.0f, 0.0f});
+    context_clear_colour(&ctx, (vec4){0.0f, 0.0f, 0.0f});
     context_clear_depth(&ctx);
 
-    draw_indexed_triangles(&ctx, 6);
+//    draw_indexed_triangles(&ctx, 6);
 
+    draw_listed_triangles(&ctx, 3);
     context_output_image_ppm(&ctx, "../image.ppm");
 
     context_cleanup(&ctx);

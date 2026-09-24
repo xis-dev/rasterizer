@@ -50,3 +50,10 @@ colour4 blinn_phong_frag_shader(const context* ctx, vertex* v) {
     return vec4_convert_vec3(diffuse_color, 1.0f);
 
 }
+
+colour4 default_triangle_frag(const context *ctx, vertex *v) {
+
+    colour4 out = vec4_convert_vec3(v->colour, 1.0f);
+
+    return out;
+}
