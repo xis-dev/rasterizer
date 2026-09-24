@@ -1,11 +1,86 @@
 # Description
 Software rasterizer written in C to understand the rendering process. Outputs to a PPM file.
 
+# Usage
+
+## Buffer Binding
+
+## Uniform Binding
+
+## Shader, Material, Texture & Light Binding
+
+## Drawing
+
+## Output
+
+## Cleanup
+
+# Architecture
+## Rendering Context
+Information structure for the current state of the rendering pipeline, uniforms, textures, material, lights, etc.
+```c++
+typedef struct context {
+
+    vertex* vertex_buffer;
+    uint32_t* index_buffer;
+
+    shader_value uniform_buffer[MAX_UNIFORMS];
+
+    directional_light dir_lights[MAX_DIRECTIONAL_LIGHTS];
+    point_light point_lights[MAX_POINT_LIGHTS];
+
+    shader_program shader;
+    material material;
+
+    texture* textures[MAX_TEXTURES];
+    framebuffer* out_buffer;
+
+    int vp_width;
+    int vp_height;
+
+} context;
+```
+## Vertices: Attributes & Varyings
+
+## Framebuffer
+
+## Shader Program
+
+## Textures
+
+## Uniforms 
+The rasterizer uses type-agnostic uniform values with a set of supported value types, using generic macro selection, we can determine the C type of the variable.
+
+```c++
+   typedef enum {UTYPE_NULL, UTYPE_INT32, UTYPE_UINT32, UTYPE_F32, UTYPE_VEC2_F32, UTYPE_VEC3_F32, UTYPE_VEC4_F32, UTYPE_MAT4_F32} u_type;
+
+    typedef struct {
+        void* value;
+        u_type value_type;
+    } shader_value;
+    
+    
+    #define sv_get_value(sv, out_ptr) \
+        do { \
+        if ((sv).value_type != CTYPE_TO_UTYPE(*(out_ptr))) {\
+            printf("SHADER_VALUE: Found mismatched types beteween provided output type and stored shader value type, while trying to get shader value"); \
+            break; \
+            }\
+        memcpy((out_ptr), (sv).value, sizeof(*(out_ptr))); \
+    } while (0)
+```
 # Process
 
 ### Assembly
 Given the current vertex buffer and optionally index buffer, the renderer assembles vertices in batches of 3 as triangles.
-
+```c++
+    for (size_t i = 0; (i + 3) <= index_count; i += 3) {
+        process_source_triangle(ctx,
+                                ctx->vertex_buffer[ctx->index_buffer[i]],
+                                ctx->vertex_buffer[ctx->index_buffer[i + 1]],
+                                ctx->vertex_buffer[ctx->index_buffer[i + 2]]);
+    }
+```
 ### Vertex Shading
 The three triangle vertices go through vertex shading, projection and the perspective divide after.
 
@@ -84,7 +159,7 @@ The barycentric interpolants are derived using the area of the parallelogram for
 
 ### Fragment Shading & Depth Testing
 
-After barycentric interpolation and we know the pixel we're currently drawing to, the vertex can be passed through the vertex shader, producing a colour, depth testing is then performed after, comparing the vertex's z component with the current depth buffer value.
+After barycentric interpolation and we know the pixel we're currently drawing to, the vertex can be passed through the fragment shader, producing a colour, depth testing is then performed after, comparing the vertex's z component with the current depth buffer value.
 
 ```c++
 
@@ -105,30 +180,6 @@ After the fragment shader is run, we can depth test against the current depth va
 
 ```
 
-# Architecture
-## Rendering Context
-Information structure 
-## Uniform System
-The rasterizer uses type-agnostic uniform values with a set of supported value types, using generic macro selection, we can determine the C type of the variable.
-
-```c++
-   typedef enum {UTYPE_NULL, UTYPE_INT32, UTYPE_UINT32, UTYPE_F32, UTYPE_VEC2_F32, UTYPE_VEC3_F32, UTYPE_VEC4_F32, UTYPE_MAT4_F32} u_type;
-
-    typedef struct {
-        void* value;
-        u_type value_type;
-    } shader_value;
-    
-    
-    #define sv_get_value(sv, out_ptr) \
-        do { \
-        if ((sv).value_type != CTYPE_TO_UTYPE(*(out_ptr))) {\
-            printf("SHADER_VALUE: Found mismatched types beteween provided output type and stored shader value type, while trying to get shader value"); \
-            break; \
-            }\
-        memcpy((out_ptr), (sv).value, sizeof(*(out_ptr))); \
-    } while (0)
-```
 
 # Sources
 - Brown, R. A. (n.d.). Barycentric coordinates  as  interpolants. Barycentric Coordinates  as  Interpolants. https://arxiv.org/pdf/1308.1279
