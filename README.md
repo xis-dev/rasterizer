@@ -1,7 +1,7 @@
 # Description
 CPU-based 3D software rasterizer written in C11, implementing a programmable rendering pipeline.
 
-<img width="1600" height="900" alt="img" src="https://github.com/user-attachments/assets/837b0c66-5aec-4fef-a6cf-4ea3e7b5d47b" />
+<img width="1600" height="900" alt="img_1" src="https://github.com/user-attachments/assets/e9b8ab0d-6c13-4b63-a7df-4b8211dbef9a" />
 
 
 # Dependencies
