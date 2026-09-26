@@ -3,10 +3,10 @@
 #include <stdlib.h>
 #include <threads.h>
 
-#include "rasterizer/include/math/vec3.h"
+#include "../rasterizer/include/math/vec3.h"
 
-#include "rasterizer/include/renderer.h"
-#include "rasterizer/include/texture.h"
+#include "../rasterizer/include/renderer.h"
+#include "../rasterizer/include/texture.h"
 
 #define WIDTH 1600
 #define HEIGHT 900
@@ -78,22 +78,16 @@ int main(int argc, char* argv[]) {
 };
 
     uint32_t indices[36] = {
-
         // Front Face
          0, 1, 2,   0, 2, 3,
-
         // Back Face
         4, 5, 6,   4, 6, 7,
-
         // Right Face
         8, 9,10,   8,10,11,
-
         // Left Face
         12,13,14,  12,14,15,
-
         // Top Face
         16,17,18,  16,18,19,
-
         // Bottom Face
         20,21,22,  20,22,23
     };

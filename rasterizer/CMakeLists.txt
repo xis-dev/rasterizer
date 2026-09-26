@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 4.1)
 
-project(Rasterizer LANGUAGES C)
+project(rasterizer LANGUAGES C)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
@@ -49,5 +49,5 @@ add_library(${PROJECT_NAME} STATIC
 target_include_directories(${PROJECT_NAME} PUBLIC ${INCLUDE_DIRS})
 
 if(UNIX AND NOT APPLE)
-    target_link_libraries(${PROJECT_NAME} PUBLIC m)
+    target_link_libraries(${PROJECT_NAME} PRIVATE m)
 endif()
