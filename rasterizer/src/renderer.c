@@ -279,3 +279,4 @@ void draw_indexed_triangles(const context *ctx, size_t index_count) {
                                 ctx->vertex_buffer[ctx->index_buffer[i + 1]],
                                 ctx->vertex_buffer[ctx->index_buffer[i + 2]]);
     }
+}

@@ -115,12 +115,12 @@ int main(int argc, char* argv[]) {
 
     ctx.point_lights[0] = light;
 
-    material random_mat;
-    material_default_initialize(&random_mat);
-    random_mat.specular = 5.0f;
-    random_mat.shininess = 8.0f;
+    material container_mat;
+    material_default_initialize(&container_mat);
+    container_mat.specular = 5.0f;
+    container_mat.shininess = 8.0f;
 
-    ctx.material = random_mat;
+    ctx.material = container_mat;
 
     context_clear_colour(&ctx, (vec4){0.0f, 0.0f, 0.0f});
     context_clear_depth(&ctx);
