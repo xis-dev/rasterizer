@@ -1,7 +1,8 @@
 # Description
 CPU-based 3D software rasterizer written in C11, implementing a programmable rendering pipeline.
 
-![img.png](img.png)
+<img width="1600" height="900" alt="img" src="https://github.com/user-attachments/assets/837b0c66-5aec-4fef-a6cf-4ea3e7b5d47b" />
+
 
 # Dependencies
 - STB(Texture Loading, Locally-Handled): https://github.com/nothings/stb
