@@ -7,12 +7,15 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS  ON)
 
-set(INCLUDE_DIRS
+set(PUBLIC_INCLUDE_DIRS
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/include
+
+)
+
+set(PRIVATE_INCLUDE_DIRS
         ${CMAKE_CURRENT_SOURCE_DIR}/include/math
         ${CMAKE_CURRENT_SOURCE_DIR}/external
-
 )
 
 set(EXTERNAL_SOURCES
@@ -46,7 +49,8 @@ add_library(${PROJECT_NAME} STATIC
         ${EXTERNAL_SOURCES}
 )
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${INCLUDE_DIRS})
+target_include_directories(${PROJECT_NAME} PUBLIC ${PUBLIC_INCLUDE_DIRS})
+target_include_directories(${PROJECT_NAME} PRIVATE ${PRIVATE_INCLUDE_DIRS})
 
 if(UNIX AND NOT APPLE)
     target_link_libraries(${PROJECT_NAME} PRIVATE m)

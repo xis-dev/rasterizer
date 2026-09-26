@@ -15,9 +15,6 @@
 int main(int argc, char* argv[]) {
 
     mat4 model = mat4_construct_diagonal(1.0f);
-    //model = mat4_scale_uniform(model, 5.0f);
-    //model = mat4_rotate_by_axis(model, 45.0f, (vec3){1.0f, 0.0f, 0.0f});
-    //model = mat4_translate(model, (vec3){0.f, 0.0f, 10.0f});
 
     vec3 camera_pos      = (vec3){4.0f, 3.0f, 6.0f};
     mat4 view = mat4_lookat(camera_pos, (vec3){0.0f, 0.0f, 0.0f});
@@ -124,7 +121,6 @@ int main(int argc, char* argv[]) {
 
     draw_indexed_triangles(&ctx, 36);
 
-//    draw_listed_triangles(&ctx, 3);
     context_output_image_ppm(&ctx, "../image.ppm");
 
     context_cleanup(&ctx);
