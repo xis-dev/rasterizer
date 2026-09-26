@@ -3,33 +3,114 @@ CPU-based 3D software rasterizer written in C11, implementing a programmable ren
 
 <img width="1600" height="900" alt="img_1" src="https://github.com/user-attachments/assets/e9b8ab0d-6c13-4b63-a7df-4b8211dbef9a" />
 
-
 # Dependencies
 - STB(Texture Loading, Locally-Handled): https://github.com/nothings/stb
 
-# Build
-```shell
-    cmake -B . -S . 
-    cmake --build .
-    ./Rasterizer
-```
 # Usage
 
-## Buffer Binding
+## CMake Configuration
+> [!NOTE]
+> Replace "../rasterizer" with the relative or absolute directory, where the rasterizer library is placed
+
+```cmake
+add_subdirectory(../rasterizer rasterizer)
+target_link_libraries(${PROJECT_NAME} PRIVATE rasterizer)
+
+```
+## Context Creation & Buffer Binding
+Default initialize the context object and viewport size, additionally giving the context the location for the vertex buffer and optionally an index buffer.
+```c++
+    context ctx;
+    context_default_initialize(&ctx);
+    context_set_viewport_size(&ctx, WIDTH, HEIGHT);
+
+    ctx.vertex_buffer = vertices;
+    ctx.index_buffer = indices;
+```
+
+Alongside these the framebuffer must also be created and bound
+
+```c++
+    framebuffer basic;
+    framebuffer_construct(&basic, WIDTH, HEIGHT);
+
+    ctx.out_buffer = &basic;
+```
 
 ## Uniform Binding
+Setting values in the uniform buffer requires first creating a shader value at the location and setting its value.
+```c++
+    sv_create(model, mat4,      &ctx.uniform_buffer[UNIFORM_SLOT_1]);
+    sv_create(view, mat4,       &ctx.uniform_buffer[UNIFORM_SLOT_2]);
+    sv_create(projection, mat4, &ctx.uniform_buffer[UNIFORM_SLOT_3]);
 
+```
+The value in a uniform slot can be changed to one of the same type without recreation.
+```c++
+    sv_change_value(&ctx.uniform_buffer[UNIFORM_SLOT_3], model);
+```
+
+If the user wishes to replace a uniform at a location with one of another type, it must first be cleaned.
+```c++
+    context_clean_uniform_at(&ctx, UNIFORM_SLOT_3);
+    sv_create(camera_pos, vec3, &ctx.uniform_buffer[UNIFORM_SLOT_3]);
+```
 ## Shader, Material, Texture & Light Binding
+The shader program requires 2 functions, a vertex and fragment function and is bound to the context by copy.
 
-## Drawing
+```c++
+    ctx.shader = (shader_program){.vertex_shader = &default_vert_shader, .fragment_shader = &blinn_phong_frag_shader};
+```
 
-## Output
+A single material may be default initialized and is bound to the context by copy.
+```c++
+    material container_mat;
+    material_default_initialize(&container_mat);
+    
+    ctx.material = container_mat;
+```
+
+Lights are bound to chosen positions into the context's array for the specific light type.
+
+```c++
+    point_light light;
+    p_light_default_construct(&light);
+    p_light_atten_from_radius(&light, 10.0f);
+
+    ctx.point_lights[0] = light;
+```
+Textures must be loaded and then bound into the context's array at the chosen position.
+```c++
+    texture container_tex;
+    texture_load_texture(&container_tex, "container.jpg", true);
+ 
+    ctx.textures[TEXTURE_SLOT_1] = &container_tex;
+```
+
+## Drawing & Output
+Once the context is properly setup, drawing triangles is done either from the index buffer or purely vertex buffer and output to the chosen PPM image.
+```c++
+    context_clear_colour(&ctx, (vec4){0.0f, 0.0f, 0.0f});
+    context_clear_depth(&ctx);
+    
+    //draw_listed_triangles(&ctx, 24); // Drawing without an index buffer
+    draw_indexed_triangles(&ctx, 36);
+
+    context_output_image_ppm(&ctx, "image.ppm");
+```
 
 ## Cleanup
-Cleanup the context, 
+Once no longer needed, the context can be cleaned, freeing allocated memory for the shader uniforms and unbinding all buffers and values. Loaded textures and created framebuffers must also be freed by the user.
+
+```c++
+    // Cleanup context and destroy objects
+    context_cleanup(&ctx);
+    framebuffer_destroy(&basic);
+    texture_destroy(&container_tex);
+```
 # Architecture
 ## Rendering Context
-Information structure for the current state of the rendering pipeline, uniforms, textures, material, lights, etc.
+Information structure for the current state of the rendering pipeline, vertex, index & output buffers, uniforms, textures, material, lights, etc.
 ```c++
 typedef struct context {
 
@@ -89,8 +170,6 @@ typedef struct {
     colour4(* fragment_shader)(const context*, vertex*);
 } shader_program;
 ```
-## Textures
-
 ## Uniforms 
 The rasterizer uses type-agnostic uniform values with a set of supported value types, using generic macro selection, we can determine the C type of the variable.
 
@@ -126,9 +205,50 @@ Given the current vertex buffer and optionally index buffer, the renderer assemb
 ```
 
 ### Clipping & Triangulation
+Using the Sutherland-Hodgeman polygon clipping algorithm, triangles are clipped against the view frustum's planes, then triangulated as a triangle fan. 
+```c++
+    polygon in;
+    polygon_construct(&in);
+    polygon_add_vertex(&in, v1);
+    polygon_add_vertex(&in, v2);
+    polygon_add_vertex(&in, v3);
 
+    // Test edges against each clip plane
+    for (int p = 0; p < 6; ++p) {
+        polygon_lazy_clear(&out);
+
+        for (int v = 0; v < in.count; ++v) {
+            // Get both vertices that form the edge(clockwise ordered)
+            const vertex* a = &in.data[v];
+            const vertex* b = &in.data[(v + 1) % in.count];
+
+            const float da = vec4_dot(a->pos, clip_planes[p]);
+            const float db = vec4_dot(b->pos, clip_planes[p]);
+
+            if (da >= 0.0f && db >= 0.0f) { // Both vertices are inside, add only second vertex
+                polygon_add_vertex(&out, *b);
+            }
+            else if (da >= 0.0f && db < 0.0f) { // First vertex inside, second outside, add only point of intersection
+
+                const float t = da / (da - db);
+                polygon_add_vertex(&out,get_interpolated_vertex(*a, *b, t));
+
+            }
+            else if (da < 0.0f && db >= 0.0f) { // First vertex outside, second inside, add point of intersection and second vertex
+
+                const float t = da / (da - db);
+                polygon_add_vertex(&out,get_interpolated_vertex(*a, *b, t));
+
+                polygon_add_vertex(&out, *b);
+            }
+
+            // Both vertices outside, do nothing
+        }
+        in = out;
+    }
+```
 ### Vertex Shading
-The three triangle vertices go through vertex shading, projection and the perspective divide after.
+The three triangle vertices are processed by the vertex shader and transformed into clip space. After clipping, the vertices undergo perspective division before rasterization.
 
 ```c++
     mat4 model_matrix;
@@ -181,7 +301,7 @@ Using only pixels contained within the bounding box of the triangle, we can eval
 ```
 
 ### Barycentric Interpolation
-Due to the vertex positions being stored in screen space, whilst our other attributes and varyings are in a space we cannot access from a linear transformation.
+Since perspective projection is not an affine transformation, attributes cannot be interpolated linearly in screen space. Perspective-correct barycentric interpolation is therefore used to recover the appropriate interpolation weights.
 
 The barycentric interpolants are derived using the area of the parallelogram formed by 2 triangle edges, undoing the projection process and obtaining barycentric coordinates for interpolation in view space.
 
@@ -228,12 +348,17 @@ After the fragment shader is run, we can depth test against the current depth va
 
 
 # Sources
+- Boreskov, A., & Shikin, E. (2014). Computer Graphics: From pixels to Programmable Graphics Hardware. CRC Press. 
 - Brown, R. A. (n.d.). Barycentric coordinates  as  interpolants. Barycentric Coordinates  as  Interpolants. https://arxiv.org/pdf/1308.1279
-- 
+- GeeksforGeeks. (2024, April 8). Polygon clipping: Sutherland–Hodgman Algorithm. https://www.geeksforgeeks.org/dsa/polygon-clipping-sutherland-hodgman-algorithm/
+- Dunn, F., & Parberry, I. (2012). 3D math primer for graphics and game development. CRC Press.
+- Oberhollenzer, D. (n.d.). AGENTD/SWRAST: A tiny, just-for-fun software rasterizer written in C. GitHub. https://github.com/AgentD/swrast/tree/master
+
 # Future Considerations
 
 - Mesh loading
+- Context flags
 - Multiple format framebuffers
 - Multiple vertex formats
 - Parallelizing rasterization
-- Multiple draw configurations
+- Multiple draw primitives

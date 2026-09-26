@@ -11,11 +11,14 @@ void context_set_viewport_size(context* c, int w, int h) {
     c->vp_height = h;
 }
 
-void context_set_uniform_array(context *c, shader_value* uniforms, size_t count) {
+void context_clean_uniform_at(context *c, uniform_slots slot) {
+    if (c->uniform_buffer[slot].value_type == UTYPE_NULL) return;
 
-
-
+    free(c->uniform_buffer[slot].value);
+    c->uniform_buffer[slot].value = NULL;
+    c->uniform_buffer[slot].value_type = UTYPE_NULL;
 }
+
 
 void context_clear_colour(const context *c, colour4 colour) {
 

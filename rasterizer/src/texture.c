@@ -6,7 +6,6 @@ void texture_load_texture(texture* tex_out, const char* filename, bool flip_on_l
 
     stbi_set_flip_vertically_on_load(flip_on_load);
 
-    // Ensure 3 channel loading regardless of the fact
     tex_out->data = stbi_load(filename, &tex_out->width, &tex_out->height, &tex_out->channels, 0);
 
     if (!tex_out->data) {

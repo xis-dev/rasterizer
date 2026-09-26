@@ -66,7 +66,7 @@ void context_default_initialize(context* c);
 
 void context_set_viewport_size(context* c, int w, int h);
 
-void context_set_uniform_array(context* c, shader_value* uniforms, size_t count);
+void context_clean_uniform_at(context* c, uniform_slots slot);
 
 void context_clear_colour(const context* c, colour4 colour);
 
