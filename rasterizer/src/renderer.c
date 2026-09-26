@@ -1,4 +1,4 @@
-#include "renderer.h"
+#include "../include/rasterizer/renderer.h"
 
 #include "math.h"
 #include "stdbool.h"

@@ -1,4 +1,4 @@
-#include "context.h"
+#include "../include/rasterizer/context.h"
 
 void context_default_initialize(context *c) {
     *c = (context){0};

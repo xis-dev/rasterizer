@@ -1,4 +1,4 @@
-#include "light.h"
+#include "../include/rasterizer/light.h"
 
 
 void p_light_default_construct(point_light *light) {

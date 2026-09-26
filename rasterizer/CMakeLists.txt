@@ -14,7 +14,8 @@ set(PUBLIC_INCLUDE_DIRS
 )
 
 set(PRIVATE_INCLUDE_DIRS
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/math
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/rasterizer
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/rasterizer/math
         ${CMAKE_CURRENT_SOURCE_DIR}/external
 )
 
@@ -24,10 +25,8 @@ set(EXTERNAL_SOURCES
 set(RASTERIZER_SOURCES
 
         src/context.c
-        src/shader_value.c
         src/renderer.c
         src/polygon.c
-        src/shader.c
         src/framebuffer.c
         src/light.c
         src/light.c

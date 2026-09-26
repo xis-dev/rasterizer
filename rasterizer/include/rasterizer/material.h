@@ -12,5 +12,5 @@ typedef struct {
     float shininess;
 } material;
 
-void material_initialize(material* m);
+void material_default_initialize(material* m);
 #endif

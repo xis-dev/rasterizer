@@ -1,4 +1,4 @@
-#include "include/math/vec2.h"
+#include "math/vec2.h"
 #include <math.h>
 
 #include "common_math.h"

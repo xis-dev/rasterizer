@@ -1,4 +1,4 @@
-#include "polygon.h"
+#include "../include/rasterizer/polygon.h"
 
 #include <string.h>
 
