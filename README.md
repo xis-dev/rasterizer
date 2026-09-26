@@ -1,6 +1,16 @@
 # Description
-Software rasterizer written in C to understand the rendering process. Outputs to a PPM file.
+CPU-based 3D software rasterizer written in C11, implementing a programmable rendering pipeline.
 
+
+# Dependencies
+- STB(Texture Loading, Locally-Handled): https://github.com/nothings/stb
+
+# Build
+```shell
+    cmake -B . -S . 
+    cmake --build .
+    ./Rasterizer
+```
 # Usage
 
 ## Buffer Binding
@@ -14,7 +24,7 @@ Software rasterizer written in C to understand the rendering process. Outputs to
 ## Output
 
 ## Cleanup
-
+Cleanup the context, 
 # Architecture
 ## Rendering Context
 Information structure for the current state of the rendering pipeline, uniforms, textures, material, lights, etc.
@@ -41,11 +51,42 @@ typedef struct context {
 } context;
 ```
 ## Vertices: Attributes & Varyings
+Vertices are currently stored as a struct of its attributes and varyings, and must be manually interpolated.
 
+```c++
+typedef struct {
+    vec4 pos;
+    vec3 colour;
+    vec3 normal;
+    vec2 uv_0;
+    vec2 uv_1;
+
+    struct {
+        vec3 world_pos;
+    } varyings;
+} vertex;
+```
 ## Framebuffer
+The framebuffer is currently a single RGBA floating-point format buffer storing colours [0, 1], with a floating-point depth buffer storing reciprocal depth [0, 1].
+```c++
+typedef struct {
+    colour4* colour_buffer;
+    float* depth_buffer;
 
+    int width;
+    int height;
+} framebuffer;
+```
 ## Shader Program
+Shader programs are defined as a structure with 2 function pointers representing the fragment and vertex shader.
 
+```c++
+typedef struct {
+
+    vertex (* vertex_shader)  (const context*, vertex);
+    colour4(* fragment_shader)(const context*, vertex*);
+} shader_program;
+```
 ## Textures
 
 ## Uniforms 
@@ -81,6 +122,9 @@ Given the current vertex buffer and optionally index buffer, the renderer assemb
                                 ctx->vertex_buffer[ctx->index_buffer[i + 2]]);
     }
 ```
+
+### Clipping & Triangulation
+
 ### Vertex Shading
 The three triangle vertices go through vertex shading, projection and the perspective divide after.
 
@@ -186,5 +230,8 @@ After the fragment shader is run, we can depth test against the current depth va
 - 
 # Future Considerations
 
+- Mesh loading
+- Multiple format framebuffers
+- Multiple vertex formats
 - Parallelizing rasterization
 - Multiple draw configurations

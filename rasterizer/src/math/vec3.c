@@ -150,9 +150,9 @@ vec3 vec3_cross(vec3 v1, vec3 v2) {
 
     vec3 out;
 
-    out.e[0] = (v1.e[1] * v2.e[2]) + (v1.e[2] * v2.e[1]);
-    out.e[1] = (v1.e[0] * v2.e[2]) + (v1.e[2] * v2.e[0]);
-    out.e[2] = (v1.e[0] * v2.e[1]) + (v1.e[1] * v2.e[0]);
+    out.e[0] = (v1.e[1] * v2.e[2]) - (v1.e[2] * v2.e[1]);
+    out.e[1] = (v1.e[0] * v2.e[2]) - (v1.e[2] * v2.e[0]);
+    out.e[2] = (v1.e[0] * v2.e[1]) - (v1.e[1] * v2.e[0]);
 
     return out;
 }

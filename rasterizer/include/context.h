@@ -5,7 +5,7 @@
 #include "shader_value.h"
 #include "shader.h"
 #include "framebuffer.h"
-#include "vec4.h"
+#include "math/vec4.h"
 #include "light.h"
 #include "material.h"
 #include "texture.h"

@@ -9,4 +9,6 @@
 
 float lerp_f(float a, float b, float t);
 
+float cm_maxf(float a, float b);
+
 #endif

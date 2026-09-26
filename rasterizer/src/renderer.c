@@ -3,13 +3,22 @@
 #include "math.h"
 #include "stdbool.h"
 
+bool cull_vertices(const vertex* v1, const vertex* v2, const vertex* v3) {
+
+    vec4 edge1 = vec4_sub(v1->pos, v3->pos);
+    vec4 edge2 = vec4_sub(v2->pos, v1->pos);
+
+    float cross_magnitude = vec3_magnitude(vec3_cross(vec3_convert_vec4(edge1), vec3_convert_vec4(edge2)));
+
+    return cross_magnitude < 0.0f ? true : false;
+}
 void process_source_triangle(const context *ctx, vertex v1, vertex v2, vertex v3) {
 
     v1 = ctx->shader.vertex_shader(ctx, v1);
     v2 = ctx->shader.vertex_shader(ctx, v2);
     v3 = ctx->shader.vertex_shader(ctx, v3);
 
-    // TODO: Add culling, pre clip
+    if (cull_vertices(&v1, &v2, &v3)) return;
     polygon clipped = clip_triangle(v1, v2, v3);
 
     // Triangle was fully clipped out or ill-formed
@@ -46,7 +55,7 @@ static vec4 ndc_to_screen(vec4 ndc, int screen_w, int screen_h) {
     vec4 out;
 
     out.e[0] = (float)trunc((ndc.e[0] * 0.5f + 0.5f) * (float)(screen_w - 1));
-    out.e[1] = (float)trunc((ndc.e[1] * 0.5f + 0.5f) * (float)(screen_h - 1));
+    out.e[1] = (float)trunc(((1.0f - ndc.e[1]) * 0.5f) * (float)(screen_h - 1));
     out.e[2] = ndc.e[2];
     out.e[3] = ndc.e[3];
 
@@ -101,6 +110,11 @@ static vertex get_bary_interpolated_vertex(vertex v1, vertex v2, vertex v3, vec3
     out.colour = vec3_add(vec3_add(vec3_scale(v1.colour, b.e[0]),
                                    vec3_scale(v2.colour, b.e[1])),
                                    vec3_scale(v3.colour, b.e[2]));
+
+
+    out.varyings.world_pos = vec3_add(vec3_add(vec3_scale(v1.varyings.world_pos, b.e[0]),
+                                   vec3_scale(v2.varyings.world_pos, b.e[1])),
+                                   vec3_scale(v3.varyings.world_pos, b.e[2]));
     return out;
 
 }
@@ -241,20 +255,16 @@ polygon clip_triangle(vertex v1, vertex v2, vertex v3) {
                 const float t = da / (da - db);
                 polygon_add_vertex(&out,get_interpolated_vertex(*a, *b, t));
 
-                printf("Add only intersection point, first inside, second out\n");
             }
             else if (da < 0.0f && db >= 0.0f) { // First vertex outside, second inside, add point of intersection and second vertex
 
                 const float t = da / (da - db);
                 polygon_add_vertex(&out,get_interpolated_vertex(*a, *b, t));
 
-                printf("Add both intersection point and second, first inside, second out\n");
                 polygon_add_vertex(&out, *b);
             }
-            else { // Both vertices are outside, do nothing
-                continue;
-            }
 
+            // Both vertices outside, do nothing
         }
         in = out;
     }

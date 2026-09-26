@@ -57,7 +57,7 @@ void context_output_image_ppm(context *c, const char *file_name) {
 
     fprintf(img, "P3 \n%i %i \n255\n", c->vp_width, c->vp_height);
 
-    for (int y = (c->vp_height - 1); y >= 0; --y) {
+    for (int y = 0; y < c->vp_height; ++y) {
         for (int x = 0; x < c->vp_width; ++x) {
 
             float r_f = c->out_buffer->colour_buffer[(c->vp_width * y) + x].e[0];

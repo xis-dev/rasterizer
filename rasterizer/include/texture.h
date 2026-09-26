@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 
-#include "vec2.h"
-#include "vec4.h"
+#include "math/vec2.h"
+#include "math/vec4.h"
 
 typedef struct {
 
@@ -20,30 +20,30 @@ void texture_load_texture(texture* tex_out, const char* filename, bool flip_on_l
 uint8_t* texture_read(texture* tex, int x, int y);
 
 // Return texture elements as an array of floats ranging from [0,1]
-colour4 texture_get_normalized_float4_array(texture* tex, int x, int y);
+colour4 texture_get_normalized_float4_array(texture* tex, float uv_x, float uv_y);
 
-static inline void texture_fill_2(texture* tex, int x, int y, colour2* c) {
-    colour4 e = texture_get_normalized_float4_array(tex, x, y);
+static inline void texture_fill_2(texture* tex, float uv_x, float uv_y, colour2* c) {
+    colour4 e = texture_get_normalized_float4_array(tex, uv_x, uv_y);
     c->e[0] = e.e[0]; c->e[1] = e.e[1];
 }
 
-static inline void texture_fill_3(texture* tex, int x, int y, colour3* c) {
-    colour4 e = texture_get_normalized_float4_array(tex, x, y);
+static inline void texture_fill_3(texture* tex, float uv_x,  float uv_y, colour3* c) {
+    colour4 e = texture_get_normalized_float4_array(tex, uv_x, uv_y);
     c->e[0] = e.e[0]; c->e[1] = e.e[1]; c->e[2] = e.e[2];
 }
 
-static inline void texture_fill_4(texture* tex, int x, int y, colour4* c) {
-    colour4 e = texture_get_normalized_float4_array(tex, x, y);
+static inline void texture_fill_4(texture* tex, float uv_x, float uv_y, colour4* c) {
+    colour4 e = texture_get_normalized_float4_array(tex, uv_x, uv_y);
     c->e[0] = e.e[0]; c->e[1] = e.e[1]; c->e[2] = e.e[2]; c->e[3] = e.e[3];
 }
 
-#define texture_read_into_colour(tex_in_ptr, pos_x, pos_y, col_out) \
+#define texture_read_into_colour(tex_in_ptr, uv_x, uv_y, col_out) \
     do {\
     _Generic((col_out), \
     colour2*: texture_fill_2,\
     colour3*: texture_fill_3,\
     colour4*: texture_fill_4 \
-) (tex_in_ptr, pos_x, pos_y, col_out); \
+) (tex_in_ptr, uv_x, uv_y, col_out); \
 } while(0)
 
 

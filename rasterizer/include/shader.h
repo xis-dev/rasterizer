@@ -2,7 +2,7 @@
 #define SHADER_H
 
 #include "vertex.h"
-#include "vec4.h"
+#include "math/vec4.h"
 
 typedef struct context context;
 

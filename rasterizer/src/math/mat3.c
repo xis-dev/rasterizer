@@ -1,9 +1,9 @@
-#include "mat3.h"
+#include "math/mat3.h"
 #include <math.h>
 #include <stdarg.h>
 #include <stdio.h>
 
-#include "common_math.h"
+#include "math/common_math.h"
 
 mat3 mat3_construct_fill(float s) {
     mat3 out;

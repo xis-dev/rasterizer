@@ -1,9 +1,9 @@
-#include "mat4.h"
+#include "math/mat4.h"
 #include <math.h>
 #include <stdarg.h>
 #include <stdio.h>
 
-#include "common_math.h"
+#include "math/common_math.h"
 
 mat4 mat4_construct_fill(float s) {
     mat4 out;

@@ -1,6 +1,7 @@
 #ifndef LIGHT_H
 #define LIGHT_H
-#include "vec3.h"
+
+#include "math/vec3.h"
 
 typedef struct {
 
@@ -27,7 +28,7 @@ typedef struct {
 
 } point_light;
 
-
+void p_light_default_construct(point_light* light);
 // Derive the linear and quadratic coefficients of a point light from a given radius, threshold and constant coeff
 void p_light_atten_from_radius(point_light* light, float radius);
 

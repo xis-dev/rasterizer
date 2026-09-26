@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
-#include "rasmath.h"
+#include "math/rasmath.h"
 
 typedef enum {UTYPE_NULL, UTYPE_INT32, UTYPE_UINT32, UTYPE_F32, UTYPE_VEC2_F32, UTYPE_VEC3_F32, UTYPE_VEC4_F32, UTYPE_MAT4_F32} u_type;
 
